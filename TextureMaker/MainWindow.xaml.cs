@@ -2,6 +2,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
 using Microsoft.Win32;
 using TextureMaker.Core;
@@ -11,7 +12,7 @@ using TextureMaker.Nodes.Output;
 
 namespace TextureMaker;
 
-public partial class MainWindow : Window
+public partial class MainWindow : RibbonWindow
 {
     private GraphViewModel _graph = new();
     private int _nodeCount = 0;
