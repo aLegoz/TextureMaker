@@ -54,50 +54,17 @@
             </StatusBarItem>
         </StatusBar>
 
-        <!-- Main content -->
+        <!-- Main content: full-width canvas + floating preview card -->
         <Grid>
-            <!-- Column layout -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition x:Name="SplitterColumn" Width="5"/>
-                    <ColumnDefinition x:Name="PreviewColumn" Width="1*" MinWidth="250"/>
-                </Grid.ColumnDefinitions>
+            <controls:GraphCanvas x:Name="NodeGraph"/>
 
-                <controls:GraphCanvas x:Name="NodeGraph" Grid.Column="0"/>
-
-                <GridSplitter x:Name="PreviewSplitter" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-
-                <!-- Preview column: header + panel -->
-                <Grid x:Name="PreviewContainer" Grid.Column="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <Border Grid.Row="0" Background="#2D2D2D" Padding="6,3">
-                        <DockPanel>
-                            <TextBlock Text="Preview" Foreground="#AAA" VerticalAlignment="Center"/>
-                            <Button x:Name="FloatPreviewButton" DockPanel.Dock="Right"
-                                    Content="Float" Click="FloatPreviewButton_Click"
-                                    Padding="10,1" HorizontalAlignment="Right"
-                                    ToolTip="Float preview over canvas"/>
-                        </DockPanel>
-                    </Border>
-
-                    <controls:PreviewPanel x:Name="PreviewPanel" Grid.Row="1"/>
-                </Grid>
-            </Grid>
-
-            <!-- Floating preview card (lives inside the canvas area) -->
             <Canvas x:Name="FloatCanvas">
                 <Border x:Name="FloatCard"
                         Canvas.Left="100" Canvas.Top="60"
                         Width="360" Height="400"
                         MinWidth="200" MinHeight="150"
                         Background="#3C3F41"
-                        BorderBrush="#555" BorderThickness="1"
-                        Visibility="Collapsed">
+                        BorderBrush="#555" BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -113,22 +80,11 @@
                                 MouseLeftButtonDown="FloatHeader_MouseDown"
                                 MouseMove="FloatHeader_MouseMove"
                                 MouseLeftButtonUp="FloatHeader_MouseUp">
-                            <Grid>
-                                <TextBlock Text="PREVIEW"
-                                           Foreground="White"
-                                           FontWeight="SemiBold"
-                                           FontSize="11"
-                                           VerticalAlignment="Center"/>
-                                <Button Content="Dock"
-                                        HorizontalAlignment="Right"
-                                        Click="FloatPreviewButton_Click"
-                                        Background="Transparent"
-                                        Foreground="#888"
-                                        BorderThickness="0"
-                                        FontSize="11"
-                                        Padding="6,0"
-                                        Cursor="Arrow"/>
-                            </Grid>
+                            <TextBlock Text="PREVIEW"
+                                       Foreground="White"
+                                       FontWeight="SemiBold"
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
                         </Border>
 
                         <!-- Preview content -->

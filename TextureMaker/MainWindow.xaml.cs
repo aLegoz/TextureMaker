@@ -16,16 +16,13 @@ public partial class MainWindow : Window
     private GraphViewModel _graph = new();
     private int _nodeCount = 0;
     private string? _currentFilePath;
-
-    // Float/dock state
     private IObservable<TextureData?>? _currentPreviewObs;
-    private bool _isFloating;
 
     // Float card drag state
     private bool _isFloatDragging;
     private Point _floatDragOffset;
 
-    // Snap state — which edges the card is currently locked to
+    // Snap state
     private bool _snapLeft, _snapRight, _snapTop, _snapBottom;
 
     public MainWindow()
@@ -41,30 +38,42 @@ public partial class MainWindow : Window
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         var s = AppSettings.Load();
-        if (s.PreviewIsFloating)
-        {
-            // Float first (sets position/size from PreviewContainer), then override with saved values
-            FloatPreviewButton_Click(this, new RoutedEventArgs());
+        FloatCard.Width  = s.PreviewWidth;
+        FloatCard.Height = s.PreviewHeight;
 
-            FloatCard.Width  = s.PreviewWidth;
-            FloatCard.Height = s.PreviewHeight;
+        _snapLeft   = s.SnapLeft;
+        _snapRight  = s.SnapRight;
+        _snapTop    = s.SnapTop;
+        _snapBottom = s.SnapBottom;
 
-            double maxLeft = Math.Max(0, FloatCanvas.ActualWidth  - s.PreviewWidth);
-            double maxTop  = Math.Max(0, FloatCanvas.ActualHeight - s.PreviewHeight);
-            Canvas.SetLeft(FloatCard, Math.Clamp(s.PreviewLeft, 0, maxLeft));
-            Canvas.SetTop(FloatCard,  Math.Clamp(s.PreviewTop,  0, maxTop));
-        }
+        double maxLeft = Math.Max(0, FloatCanvas.ActualWidth  - FloatCard.Width);
+        double maxTop  = Math.Max(0, FloatCanvas.ActualHeight - FloatCard.Height);
+
+        double left = Math.Clamp(s.PreviewLeft, 0, maxLeft);
+        double top  = Math.Clamp(s.PreviewTop,  0, maxTop);
+
+        // Re-apply snap so card sits exactly at the edge
+        if (_snapLeft)   left = 0;
+        if (_snapRight)  left = maxLeft;
+        if (_snapTop)    top  = 0;
+        if (_snapBottom) top  = maxTop;
+
+        Canvas.SetLeft(FloatCard, left);
+        Canvas.SetTop(FloatCard,  top);
     }
 
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         new AppSettings
         {
-            PreviewIsFloating = _isFloating,
-            PreviewLeft       = Canvas.GetLeft(FloatCard),
-            PreviewTop        = Canvas.GetTop(FloatCard),
-            PreviewWidth      = FloatCard.ActualWidth  > 0 ? FloatCard.ActualWidth  : FloatCard.Width,
-            PreviewHeight     = FloatCard.ActualHeight > 0 ? FloatCard.ActualHeight : FloatCard.Height,
+            PreviewLeft   = Canvas.GetLeft(FloatCard),
+            PreviewTop    = Canvas.GetTop(FloatCard),
+            PreviewWidth  = FloatCard.ActualWidth  > 0 ? FloatCard.ActualWidth  : FloatCard.Width,
+            PreviewHeight = FloatCard.ActualHeight > 0 ? FloatCard.ActualHeight : FloatCard.Height,
+            SnapLeft      = _snapLeft,
+            SnapRight     = _snapRight,
+            SnapTop       = _snapTop,
+            SnapBottom    = _snapBottom,
         }.Save();
     }
 
@@ -75,9 +84,8 @@ public partial class MainWindow : Window
         else if (node is SaveNodeViewModel sn)    obs = sn.InputTexture.Value;
         _currentPreviewObs = obs;
 
-        var target = _isFloating ? FloatPreviewPanel : PreviewPanel;
-        if (obs != null) target.BindToOutput(obs);
-        else             target.ClearPreview();
+        if (obs != null) FloatPreviewPanel.BindToOutput(obs);
+        else             FloatPreviewPanel.ClearPreview();
     }
 
     private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -127,7 +135,6 @@ public partial class MainWindow : Window
     {
         _graph.Connections.Clear();
         _graph.Nodes.Clear();
-        PreviewPanel.ClearPreview();
         FloatPreviewPanel.ClearPreview();
         _currentFilePath = null;
         _nodeCount = 0;
@@ -144,7 +151,6 @@ public partial class MainWindow : Window
             _graph = ProjectSerializer.Load(dlg.FileName);
             NodeGraph.SetGraph(_graph);
             NodeGraph.SelectionChanged += OnSelectionChanged;
-            PreviewPanel.ClearPreview();
             FloatPreviewPanel.ClearPreview();
             _currentFilePath = dlg.FileName;
             _nodeCount = _graph.Nodes.Count;
@@ -190,53 +196,6 @@ public partial class MainWindow : Window
     private void UpdateTitle() =>
         Title = _currentFilePath == null ? "TextureMaker" : $"TextureMaker — {Path.GetFileName(_currentFilePath)}";
 
-    // ── Float / Dock preview ──────────────────────────────────────────
-
-    private void FloatPreviewButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_isFloating) { DockPreview(); return; }
-
-        // Position float card where the docked panel currently sits
-        var pt = PreviewContainer.TranslatePoint(new Point(0, 0), FloatCanvas);
-        Canvas.SetLeft(FloatCard, pt.X);
-        Canvas.SetTop(FloatCard, pt.Y);
-        FloatCard.Width  = Math.Max(200, PreviewContainer.ActualWidth);
-        FloatCard.Height = Math.Max(150, PreviewContainer.ActualHeight);
-
-        // Collapse docked panel
-        PreviewPanel.ClearPreview();
-        PreviewContainer.Visibility = Visibility.Collapsed;
-        PreviewSplitter.Visibility  = Visibility.Collapsed;
-        PreviewColumn.MinWidth      = 0;
-        PreviewColumn.Width         = new GridLength(0);
-        SplitterColumn.Width        = new GridLength(0);
-
-        // Show float card
-        FloatCard.Visibility       = Visibility.Visible;
-        FloatPreviewButton.Content = "Dock";
-        _isFloating = true;
-
-        if (_currentPreviewObs != null)
-            FloatPreviewPanel.BindToOutput(_currentPreviewObs);
-    }
-
-    private void DockPreview()
-    {
-        FloatPreviewPanel.ClearPreview();
-        FloatCard.Visibility = Visibility.Collapsed;
-
-        SplitterColumn.Width        = new GridLength(5);
-        PreviewColumn.MinWidth      = 250;
-        PreviewColumn.Width         = new GridLength(1, GridUnitType.Star);
-        PreviewSplitter.Visibility  = Visibility.Visible;
-        PreviewContainer.Visibility = Visibility.Visible;
-        FloatPreviewButton.Content  = "Float";
-        _isFloating = false;
-
-        if (_currentPreviewObs != null) PreviewPanel.BindToOutput(_currentPreviewObs);
-        else                            PreviewPanel.ClearPreview();
-    }
-
     // ── Float card drag ───────────────────────────────────────────────
 
     private void FloatHeader_MouseDown(object sender, MouseButtonEventArgs e)
@@ -264,21 +223,25 @@ public partial class MainWindow : Window
         double left = Math.Clamp(pos.X - _floatDragOffset.X, 0, maxLeft);
         double top  = Math.Clamp(pos.Y - _floatDragOffset.Y, 0, maxTop);
 
-        // Snap to edges and record which edges are active
-        _snapLeft   = left <= snap;             if (_snapLeft)   left = 0;
-        _snapRight  = maxLeft - left <= snap;   if (_snapRight)  left = maxLeft;
-        _snapTop    = top <= snap;              if (_snapTop)    top  = 0;
-        _snapBottom = maxTop - top <= snap;     if (_snapBottom) top  = maxTop;
+        _snapLeft   = left <= snap;              if (_snapLeft)   left = 0;
+        _snapRight  = maxLeft - left <= snap;    if (_snapRight)  left = maxLeft;
+        _snapTop    = top  <= snap;              if (_snapTop)    top  = 0;
+        _snapBottom = maxTop  - top  <= snap;    if (_snapBottom) top  = maxTop;
 
         Canvas.SetLeft(FloatCard, left);
         Canvas.SetTop(FloatCard,  top);
     }
 
+    private void FloatHeader_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left) return;
+        _isFloatDragging = false;
+        ((UIElement)sender).ReleaseMouseCapture();
+    }
+
     // Reposition card on canvas resize so snapped edges stay snapped
     private void FloatCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (FloatCard.Visibility != Visibility.Visible) return;
-
         double maxLeft = Math.Max(0, FloatCanvas.ActualWidth  - FloatCard.ActualWidth);
         double maxTop  = Math.Max(0, FloatCanvas.ActualHeight - FloatCard.ActualHeight);
 
@@ -292,13 +255,6 @@ public partial class MainWindow : Window
 
         Canvas.SetLeft(FloatCard, Math.Clamp(left, 0, maxLeft));
         Canvas.SetTop(FloatCard,  Math.Clamp(top,  0, maxTop));
-    }
-
-    private void FloatHeader_MouseUp(object sender, MouseButtonEventArgs e)
-    {
-        if (e.ChangedButton != MouseButton.Left) return;
-        _isFloatDragging = false;
-        ((UIElement)sender).ReleaseMouseCapture();
     }
 
     // ── Float card resize ─────────────────────────────────────────────

@@ -5,11 +5,14 @@ namespace TextureMaker.Core;
 
 public class AppSettings
 {
-    public bool   PreviewIsFloating { get; set; } = false;
     public double PreviewLeft       { get; set; } = 100;
     public double PreviewTop        { get; set; } = 60;
     public double PreviewWidth      { get; set; } = 360;
     public double PreviewHeight     { get; set; } = 400;
+    public bool   SnapLeft          { get; set; } = false;
+    public bool   SnapRight         { get; set; } = false;
+    public bool   SnapTop           { get; set; } = false;
+    public bool   SnapBottom        { get; set; } = false;
 
     // ── Persistence ───────────────────────────────────────────────────
 
