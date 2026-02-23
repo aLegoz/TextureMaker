@@ -4,9 +4,10 @@
         xmlns:ribbon="clr-namespace:System.Windows.Controls.Ribbon;assembly=System.Windows.Controls.Ribbon"
         xmlns:controls="clr-namespace:TextureMaker.Views.Controls"
         Title="TextureMaker" Height="700" Width="1200"
+        Icon="Resources/TextureMaker.ico"
         WindowStartupLocation="CenterScreen"
         KeyDown="MainWindow_KeyDown">
-    <DockPanel>
+    <DockPanel x:Name="RootPanel">
 
         <!-- Ribbon -->
         <ribbon:Ribbon DockPanel.Dock="Top">
@@ -61,47 +62,60 @@
                         </ribbon:RibbonButton.SmallImageSource>
                     </ribbon:RibbonButton>
 
+                    <!-- Save As -->
+                    <ribbon:RibbonButton ToolTip="Save As..." Click="SaveAsProject_Click">
+                        <ribbon:RibbonButton.SmallImageSource>
+                            <DrawingImage>
+                                <DrawingImage.Drawing>
+                                    <DrawingGroup>
+                                        <GeometryDrawing Brush="#4A90D9" Geometry="M0,0 L16,0 L16,16 L0,16 Z"/>
+                                        <GeometryDrawing Brush="White"   Geometry="M2,9 L14,9 L14,15 L2,15 Z"/>
+                                        <GeometryDrawing Brush="#DDE"    Geometry="M3,0 L11,0 L11,6 L3,6 Z"/>
+                                        <GeometryDrawing Brush="#88A"    Geometry="M8,1 L10,1 L10,5 L8,5 Z"/>
+                                        <!-- small arrow overlay -->
+                                        <GeometryDrawing Brush="White"   Geometry="M10,10 L14,10 L12,13 Z"/>
+                                    </DrawingGroup>
+                                </DrawingImage.Drawing>
+                            </DrawingImage>
+                        </ribbon:RibbonButton.SmallImageSource>
+                    </ribbon:RibbonButton>
+
                 </ribbon:RibbonQuickAccessToolBar>
             </ribbon:Ribbon.QuickAccessToolBar>
             <ribbon:Ribbon.ApplicationMenu>
-                <ribbon:RibbonApplicationMenu>
-                    <ribbon:RibbonApplicationMenuItem Header="New"      Click="NewProject_Click"   InputGestureText="Ctrl+N"/>
-                    <ribbon:RibbonApplicationMenuItem Header="Open..."  Click="OpenProject_Click"  InputGestureText="Ctrl+O"/>
-                    <ribbon:RibbonApplicationMenuItem Header="Save"     Click="SaveProject_Click"  InputGestureText="Ctrl+S"/>
-                    <ribbon:RibbonApplicationMenuItem Header="Save As..." Click="SaveAsProject_Click"/>
-                </ribbon:RibbonApplicationMenu>
+                <ribbon:RibbonApplicationMenu Visibility="Collapsed"/>
             </ribbon:Ribbon.ApplicationMenu>
 
             <ribbon:RibbonTab Header="Nodes">
 
                 <ribbon:RibbonGroup Header="Sources">
-                    <ribbon:RibbonButton Label="Root Folder"  Click="AddNode_Click" Tag="RootFolder"/>
-                    <ribbon:RibbonButton Label="Image Load"   Click="AddNode_Click" Tag="ImageLoad"/>
-                    <ribbon:RibbonButton Label="Solid Color"  Click="AddNode_Click" Tag="SolidColor"/>
-                    <ribbon:RibbonButton Label="Gradient"     Click="AddNode_Click" Tag="Gradient"/>
-                    <ribbon:RibbonButton Label="Noise"        Click="AddNode_Click" Tag="Noise"/>
+                    <ribbon:RibbonButton Label="Root Folder"  Click="AddNode_Click" Tag="RootFolder"        LargeImageSource="{StaticResource Icon.RootFolder}"/>
+                    <ribbon:RibbonButton Label="Image Load"   Click="AddNode_Click" Tag="ImageLoad"         LargeImageSource="{StaticResource Icon.ImageLoad}"/>
+                    <ribbon:RibbonButton Label="Solid Color"  Click="AddNode_Click" Tag="SolidColor"        LargeImageSource="{StaticResource Icon.SolidColor}"/>
+                    <ribbon:RibbonButton Label="Gradient"     Click="AddNode_Click" Tag="Gradient"          LargeImageSource="{StaticResource Icon.Gradient}"/>
+                    <ribbon:RibbonButton Label="Noise"        Click="AddNode_Click" Tag="Noise"             LargeImageSource="{StaticResource Icon.Noise}"/>
                 </ribbon:RibbonGroup>
 
                 <ribbon:RibbonGroup Header="Filters">
-                    <ribbon:RibbonButton Label="Blur"                 Click="AddNode_Click" Tag="Blur"/>
-                    <ribbon:RibbonButton Label="Sharpen"              Click="AddNode_Click" Tag="Sharpen"/>
-                    <ribbon:RibbonButton Label="Brightness / Contrast" Click="AddNode_Click" Tag="BrightnessContrast"/>
+                    <ribbon:RibbonButton Label="Blur"                  Click="AddNode_Click" Tag="Blur"               LargeImageSource="{StaticResource Icon.Blur}"/>
+                    <ribbon:RibbonButton Label="Sharpen"               Click="AddNode_Click" Tag="Sharpen"            LargeImageSource="{StaticResource Icon.Sharpen}"/>
+                    <ribbon:RibbonButton Label="Brightness / Contrast" Click="AddNode_Click" Tag="BrightnessContrast" LargeImageSource="{StaticResource Icon.BrightnessContrast}"/>
                 </ribbon:RibbonGroup>
 
                 <ribbon:RibbonGroup Header="Combine">
-                    <ribbon:RibbonButton Label="Blend"     Click="AddNode_Click" Tag="Blend"/>
-                    <ribbon:RibbonButton Label="Mask"      Click="AddNode_Click" Tag="Mask"/>
-                    <ribbon:RibbonButton Label="Composite" Click="AddNode_Click" Tag="Composite"/>
+                    <ribbon:RibbonButton Label="Blend"     Click="AddNode_Click" Tag="Blend"     LargeImageSource="{StaticResource Icon.Blend}"/>
+                    <ribbon:RibbonButton Label="Mask"      Click="AddNode_Click" Tag="Mask"      LargeImageSource="{StaticResource Icon.Mask}"/>
+                    <ribbon:RibbonButton Label="Composite" Click="AddNode_Click" Tag="Composite" LargeImageSource="{StaticResource Icon.Composite}"/>
                 </ribbon:RibbonGroup>
 
                 <ribbon:RibbonGroup Header="Special">
-                    <ribbon:RibbonButton Label="Normal Map" Click="AddNode_Click" Tag="NormalMap"/>
-                    <ribbon:RibbonButton Label="Invert"     Click="AddNode_Click" Tag="Invert"/>
-                    <ribbon:RibbonButton Label="Levels"     Click="AddNode_Click" Tag="Levels"/>
+                    <ribbon:RibbonButton Label="Normal Map" Click="AddNode_Click" Tag="NormalMap" LargeImageSource="{StaticResource Icon.NormalMap}"/>
+                    <ribbon:RibbonButton Label="Invert"     Click="AddNode_Click" Tag="Invert"    LargeImageSource="{StaticResource Icon.Invert}"/>
+                    <ribbon:RibbonButton Label="Levels"     Click="AddNode_Click" Tag="Levels"    LargeImageSource="{StaticResource Icon.Levels}"/>
                 </ribbon:RibbonGroup>
 
                 <ribbon:RibbonGroup Header="Output">
-                    <ribbon:RibbonButton Label="Save Texture" Click="AddNode_Click" Tag="Save"/>
+                    <ribbon:RibbonButton Label="Save Texture" Click="AddNode_Click" Tag="Save" LargeImageSource="{StaticResource Icon.SaveTexture}"/>
                 </ribbon:RibbonGroup>
 
             </ribbon:RibbonTab>

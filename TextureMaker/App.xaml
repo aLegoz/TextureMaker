@@ -9,6 +9,167 @@
              xmlns:nodeViews="clr-namespace:TextureMaker.Views.Nodes"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+
+        <!-- ── Node ribbon icons (32×32 DrawingImage) ──────────────────── -->
+
+        <!-- Root Folder: yellow folder -->
+        <DrawingImage x:Key="Icon.RootFolder">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#C8860A" Geometry="M2,12 L2,28 L30,28 L30,12 Z"/>
+                <GeometryDrawing Brush="#F0A820" Geometry="M2,12 L2,8 L11,8 L13,12 L30,12 L30,14 L2,14 Z"/>
+                <GeometryDrawing Brush="#F5C040" Geometry="M2,14 L30,14 L28,28 L4,28 Z"/>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Image Load: landscape photo -->
+        <DrawingImage x:Key="Icon.ImageLoad">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="White"><GeometryDrawing.Geometry><RectangleGeometry Rect="1,1,30,30"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#888" Thickness="1.5"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#6BB5FF" Geometry="M2,2 L30,2 L30,18 L2,18 Z"/>
+                <GeometryDrawing Brush="#4A7C4E" Geometry="M2,30 L10,16 L18,24 L22,20 L30,30 Z"/>
+                <GeometryDrawing Brush="#FFD700"><GeometryDrawing.Geometry><EllipseGeometry Center="25,8" RadiusX="4" RadiusY="4"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Solid Color: 4 color quadrants -->
+        <DrawingImage x:Key="Icon.SolidColor">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#D04040" Geometry="M2,2 L16,2 L16,16 L2,16 Z"/>
+                <GeometryDrawing Brush="#40A040" Geometry="M16,2 L30,2 L30,16 L16,16 Z"/>
+                <GeometryDrawing Brush="#4060D0" Geometry="M2,16 L16,16 L16,30 L2,30 Z"/>
+                <GeometryDrawing Brush="#C0A020" Geometry="M16,16 L30,16 L30,30 L16,30 Z"/>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Gradient: dark-to-light stripes -->
+        <DrawingImage x:Key="Icon.Gradient">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#111" Geometry="M2,2 L7,2 L7,30 L2,30 Z"/>
+                <GeometryDrawing Brush="#444" Geometry="M7,2 L12,2 L12,30 L7,30 Z"/>
+                <GeometryDrawing Brush="#777" Geometry="M12,2 L17,2 L17,30 L12,30 Z"/>
+                <GeometryDrawing Brush="#AAA" Geometry="M17,2 L22,2 L22,30 L17,30 Z"/>
+                <GeometryDrawing Brush="#DDD" Geometry="M22,2 L27,2 L27,30 L22,30 Z"/>
+                <GeometryDrawing Brush="White" Geometry="M27,2 L30,2 L30,30 L27,30 Z"/>
+                <GeometryDrawing><GeometryDrawing.Geometry><RectangleGeometry Rect="2,2,28,28"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#555" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Noise: dark bg + scattered dots -->
+        <DrawingImage x:Key="Icon.Noise">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#2A2A2A"><GeometryDrawing.Geometry><RectangleGeometry Rect="2,2,28,28"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="White"  Geometry="M4,4 L6,4 L6,6 L4,6 Z M22,4 L24,4 L24,6 L22,6 Z M13,9 L15,9 L15,11 L13,11 Z M27,11 L29,11 L29,13 L27,13 Z M7,15 L9,15 L9,17 L7,17 Z M19,17 L21,17 L21,19 L19,19 Z M3,22 L5,22 L5,24 L3,24 Z M25,24 L27,24 L27,26 L25,26 Z M11,25 L13,25 L13,27 L11,27 Z"/>
+                <GeometryDrawing Brush="#888"   Geometry="M10,5 L12,5 L12,7 L10,7 Z M17,13 L19,13 L19,15 L17,15 Z M5,11 L7,11 L7,13 L5,13 Z M25,18 L27,18 L27,20 L25,20 Z M15,22 L17,22 L17,24 L15,24 Z M28,5 L30,5 L30,7 L28,7 Z"/>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Blur: concentric circles -->
+        <DrawingImage x:Key="Icon.Blur">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#CCCCCC"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="14" RadiusY="14"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#AAAAAA"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="10" RadiusY="10"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#777777"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="6" RadiusY="6"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="White"  ><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="3" RadiusY="3"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Sharpen: diamond -->
+        <DrawingImage x:Key="Icon.Sharpen">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4488EE" Geometry="M16,2 L30,16 L16,30 L2,16 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#2266CC" Thickness="1.5"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="White" Geometry="M16,8 L24,16 L16,24 L8,16 Z"/>
+                <GeometryDrawing Brush="#4488EE"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="3" RadiusY="3"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Brightness/Contrast: sun -->
+        <DrawingImage x:Key="Icon.BrightnessContrast">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#FFD700"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="7" RadiusY="7"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#FFD700" Geometry="M15,2 L17,2 L17,6 L15,6 Z M15,26 L17,26 L17,30 L15,30 Z M2,15 L2,17 L6,17 L6,15 Z M26,15 L26,17 L30,17 L30,15 Z M7,5 L8,4 L11,7 L10,8 Z M21,24 L22,23 L25,26 L24,27 Z M5,21 L4,22 L7,25 L8,24 Z M24,7 L25,8 L22,11 L21,10 Z"/>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Blend: two overlapping squares -->
+        <DrawingImage x:Key="Icon.Blend">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4466CC" Geometry="M2,4 L20,4 L20,22 L2,22 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#2244AA" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#CC4444" Geometry="M12,10 L30,10 L30,28 L12,28 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#AA2222" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#884488" Geometry="M12,10 L20,10 L20,22 L12,22 Z"/>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Mask: black/white with circle cutout -->
+        <DrawingImage x:Key="Icon.Mask">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="Black"  Geometry="M2,2 L30,2 L30,30 L2,30 Z"/>
+                <GeometryDrawing Brush="White"  Geometry="M16,2 L30,2 L30,30 L16,30 Z"/>
+                <GeometryDrawing Brush="#888"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="9" RadiusY="9"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#AAA" Thickness="1.5"/></GeometryDrawing.Pen></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Composite: two offset layers -->
+        <DrawingImage x:Key="Icon.Composite">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#777" Geometry="M2,12 L22,12 L22,30 L2,30 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#555" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#AADDFF" Geometry="M10,2 L30,2 L30,22 L10,22 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#88BBEE" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Normal Map: RGBA quadrants -->
+        <DrawingImage x:Key="Icon.NormalMap">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#FF8080" Geometry="M2,2 L16,2 L16,16 L2,16 Z"/>
+                <GeometryDrawing Brush="#80FF80" Geometry="M16,2 L30,2 L30,16 L16,16 Z"/>
+                <GeometryDrawing Brush="#8080FF" Geometry="M2,16 L30,16 L30,30 L2,30 Z"/>
+                <GeometryDrawing><GeometryDrawing.Geometry><RectangleGeometry Rect="2,2,28,28"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#444" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Invert: black left / white right -->
+        <DrawingImage x:Key="Icon.Invert">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="Black"  Geometry="M2,2 L16,2 L16,30 L2,30 Z"/>
+                <GeometryDrawing Brush="White"  Geometry="M16,2 L30,2 L30,30 L16,30 Z"/>
+                <GeometryDrawing Brush="White" ><GeometryDrawing.Geometry><EllipseGeometry Center="9,16" RadiusX="5" RadiusY="5"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="Black" ><GeometryDrawing.Geometry><EllipseGeometry Center="23,16" RadiusX="5" RadiusY="5"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing><GeometryDrawing.Geometry><RectangleGeometry Rect="2,2,28,28"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#555" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Levels: histogram bars -->
+        <DrawingImage x:Key="Icon.Levels">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#1A1A2E"><GeometryDrawing.Geometry><RectangleGeometry Rect="2,2,28,28"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#555" Geometry="M5,28 L8,28 L8,22 L5,22 Z"/>
+                <GeometryDrawing Brush="#888" Geometry="M10,28 L13,28 L13,16 L10,16 Z"/>
+                <GeometryDrawing Brush="White" Geometry="M15,28 L18,28 L18,8 L15,8 Z"/>
+                <GeometryDrawing Brush="#888" Geometry="M20,28 L23,28 L23,14 L20,14 Z"/>
+                <GeometryDrawing Brush="#555" Geometry="M25,28 L28,28 L28,20 L25,20 Z"/>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Save Texture: floppy disk -->
+        <DrawingImage x:Key="Icon.SaveTexture">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4A90D9" Geometry="M2,2 L26,2 L30,6 L30,30 L2,30 Z"/>
+                <GeometryDrawing Brush="White"  ><GeometryDrawing.Geometry><RectangleGeometry Rect="4,16,24,12"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#DDE"   ><GeometryDrawing.Geometry><RectangleGeometry Rect="5,2,18,11"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#88A"   ><GeometryDrawing.Geometry><RectangleGeometry Rect="16,3,6,9"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#6AABEE"><GeometryDrawing.Geometry><RectangleGeometry Rect="6,18,20,8"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
         <!-- Source nodes -->
         <DataTemplate DataType="{x:Type nodes:RootFolderNodeViewModel}">
             <nodeViews:RootFolderNodeView/>

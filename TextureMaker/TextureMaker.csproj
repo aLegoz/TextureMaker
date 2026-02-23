@@ -8,7 +8,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>TextureMaker</RootNamespace>
     <AssemblyName>TextureMaker</AssemblyName>
+    <ApplicationIcon>Resources\TextureMaker.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\TextureMaker.ico"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="ReactiveUI.WPF" Version="20.1.1" />
