@@ -56,37 +56,102 @@
 
         <!-- Main content -->
         <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition x:Name="SplitterColumn" Width="5"/>
-                <ColumnDefinition x:Name="PreviewColumn" Width="1*" MinWidth="250"/>
-            </Grid.ColumnDefinitions>
+            <!-- Column layout -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition x:Name="SplitterColumn" Width="5"/>
+                    <ColumnDefinition x:Name="PreviewColumn" Width="1*" MinWidth="250"/>
+                </Grid.ColumnDefinitions>
 
-            <!-- Custom node graph canvas -->
-            <controls:GraphCanvas x:Name="NodeGraph" Grid.Column="0"/>
+                <controls:GraphCanvas x:Name="NodeGraph" Grid.Column="0"/>
 
-            <!-- Splitter -->
-            <GridSplitter x:Name="PreviewSplitter" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+                <GridSplitter x:Name="PreviewSplitter" Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
 
-            <!-- Preview column: header + panel -->
-            <Grid x:Name="PreviewContainer" Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <!-- Preview column: header + panel -->
+                <Grid x:Name="PreviewContainer" Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Background="#2D2D2D" Padding="6,3">
-                    <DockPanel>
-                        <TextBlock Text="Preview" Foreground="#AAA" VerticalAlignment="Center"/>
-                        <Button x:Name="FloatPreviewButton" DockPanel.Dock="Right"
-                                Content="Float" Click="FloatPreviewButton_Click"
-                                Padding="10,1" HorizontalAlignment="Right"
-                                ToolTip="Detach preview into a floating window"/>
-                    </DockPanel>
-                </Border>
+                    <Border Grid.Row="0" Background="#2D2D2D" Padding="6,3">
+                        <DockPanel>
+                            <TextBlock Text="Preview" Foreground="#AAA" VerticalAlignment="Center"/>
+                            <Button x:Name="FloatPreviewButton" DockPanel.Dock="Right"
+                                    Content="Float" Click="FloatPreviewButton_Click"
+                                    Padding="10,1" HorizontalAlignment="Right"
+                                    ToolTip="Float preview over canvas"/>
+                        </DockPanel>
+                    </Border>
 
-                <controls:PreviewPanel x:Name="PreviewPanel" Grid.Row="1"/>
+                    <controls:PreviewPanel x:Name="PreviewPanel" Grid.Row="1"/>
+                </Grid>
             </Grid>
+
+            <!-- Floating preview card (lives inside the canvas area) -->
+            <Canvas x:Name="FloatCanvas">
+                <Border x:Name="FloatCard"
+                        Canvas.Left="100" Canvas.Top="60"
+                        Width="360" Height="400"
+                        MinWidth="200" MinHeight="150"
+                        Background="#3C3F41"
+                        BorderBrush="#555" BorderThickness="1"
+                        Visibility="Collapsed">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="14"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Node-style header (drag to move) -->
+                        <Border Grid.Row="0"
+                                Background="#1E1E1E"
+                                Padding="6,4"
+                                Cursor="SizeAll"
+                                MouseLeftButtonDown="FloatHeader_MouseDown"
+                                MouseMove="FloatHeader_MouseMove"
+                                MouseLeftButtonUp="FloatHeader_MouseUp">
+                            <Grid>
+                                <TextBlock Text="PREVIEW"
+                                           Foreground="White"
+                                           FontWeight="SemiBold"
+                                           FontSize="11"
+                                           VerticalAlignment="Center"/>
+                                <Button Content="Dock"
+                                        HorizontalAlignment="Right"
+                                        Click="FloatPreviewButton_Click"
+                                        Background="Transparent"
+                                        Foreground="#888"
+                                        BorderThickness="0"
+                                        FontSize="11"
+                                        Padding="6,0"
+                                        Cursor="Arrow"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Preview content -->
+                        <controls:PreviewPanel x:Name="FloatPreviewPanel" Grid.Row="1"/>
+
+                        <!-- Resize grip -->
+                        <Thumb Grid.Row="2"
+                               Width="14" HorizontalAlignment="Right"
+                               Cursor="SizeNWSE"
+                               DragDelta="ResizeThumb_DragDelta">
+                            <Thumb.Template>
+                                <ControlTemplate>
+                                    <Canvas Width="12" Height="12" Margin="0,1,1,0">
+                                        <Line X1="2"  Y1="12" X2="12" Y2="2"  Stroke="#666" StrokeThickness="1.5"/>
+                                        <Line X1="6"  Y1="12" X2="12" Y2="6"  Stroke="#666" StrokeThickness="1.5"/>
+                                        <Line X1="10" Y1="12" X2="12" Y2="10" Stroke="#666" StrokeThickness="1.5"/>
+                                    </Canvas>
+                                </ControlTemplate>
+                            </Thumb.Template>
+                        </Thumb>
+                    </Grid>
+                </Border>
+            </Canvas>
         </Grid>
     </DockPanel>
 </Window>
