@@ -1,0 +1,5 @@
+<UserControl x:Class="TextureMaker.Views.Nodes.InvertNodeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <TextBlock Margin="4" Text="Inverts all channels" Foreground="#888" FontSize="10"/>
+</UserControl>

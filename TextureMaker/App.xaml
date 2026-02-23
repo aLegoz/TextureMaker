@@ -1,0 +1,67 @@
+<Application x:Class="TextureMaker.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:nodes="clr-namespace:TextureMaker.Nodes.Sources"
+             xmlns:filters="clr-namespace:TextureMaker.Nodes.Filters"
+             xmlns:combine="clr-namespace:TextureMaker.Nodes.Combine"
+             xmlns:special="clr-namespace:TextureMaker.Nodes.Special"
+             xmlns:output="clr-namespace:TextureMaker.Nodes.Output"
+             xmlns:nodeViews="clr-namespace:TextureMaker.Views.Nodes"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Source nodes -->
+        <DataTemplate DataType="{x:Type nodes:RootFolderNodeViewModel}">
+            <nodeViews:RootFolderNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type nodes:ImageLoadNodeViewModel}">
+            <nodeViews:ImageLoadNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type nodes:SolidColorNodeViewModel}">
+            <nodeViews:SolidColorNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type nodes:GradientNodeViewModel}">
+            <nodeViews:GradientNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type nodes:NoiseNodeViewModel}">
+            <nodeViews:NoiseNodeView/>
+        </DataTemplate>
+
+        <!-- Filter nodes -->
+        <DataTemplate DataType="{x:Type filters:BlurNodeViewModel}">
+            <nodeViews:BlurNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type filters:SharpenNodeViewModel}">
+            <nodeViews:SharpenNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type filters:BrightnessContrastNodeViewModel}">
+            <nodeViews:BrightnessContrastNodeView/>
+        </DataTemplate>
+
+        <!-- Combine nodes -->
+        <DataTemplate DataType="{x:Type combine:BlendNodeViewModel}">
+            <nodeViews:BlendNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type combine:MaskNodeViewModel}">
+            <nodeViews:MaskNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type combine:CompositeNodeViewModel}">
+            <nodeViews:CompositeNodeView/>
+        </DataTemplate>
+
+        <!-- Special nodes -->
+        <DataTemplate DataType="{x:Type special:NormalMapNodeViewModel}">
+            <nodeViews:NormalMapNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type special:InvertNodeViewModel}">
+            <nodeViews:InvertNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type special:LevelsNodeViewModel}">
+            <nodeViews:LevelsNodeView/>
+        </DataTemplate>
+
+        <!-- Output nodes -->
+        <DataTemplate DataType="{x:Type output:SaveNodeViewModel}">
+            <nodeViews:SaveNodeView/>
+        </DataTemplate>
+    </Application.Resources>
+</Application>

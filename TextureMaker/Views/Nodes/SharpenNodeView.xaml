@@ -1,0 +1,21 @@
+<UserControl x:Class="TextureMaker.Views.Nodes.SharpenNodeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="30"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Amount:" VerticalAlignment="Center" Margin="0,0,6,4" Foreground="#CCC"/>
+        <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="5" Value="{Binding Amount}" Margin="0,0,0,4"/>
+        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Amount, StringFormat=F1}" VerticalAlignment="Center" Margin="4,0,0,4" Foreground="#CCC"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Radius:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#CCC"/>
+        <Slider Grid.Row="1" Grid.Column="1" Minimum="0.1" Maximum="10" Value="{Binding Radius}"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Radius, StringFormat=F1}" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="#CCC"/>
+    </Grid>
+</UserControl>

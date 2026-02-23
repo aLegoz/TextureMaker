@@ -1,0 +1,75 @@
+<Window x:Class="TextureMaker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:TextureMaker.Views.Controls"
+        Title="TextureMaker" Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        KeyDown="MainWindow_KeyDown">
+    <DockPanel>
+        <!-- Menu bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File">
+                <MenuItem Header="New"        Click="NewProject_Click"   InputGestureText="Ctrl+N"/>
+                <MenuItem Header="Open..."    Click="OpenProject_Click"  InputGestureText="Ctrl+O"/>
+                <Separator/>
+                <MenuItem Header="Save"       Click="SaveProject_Click"  InputGestureText="Ctrl+S"/>
+                <MenuItem Header="Save As..." Click="SaveAsProject_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Label FontWeight="Bold">Sources:</Label>
+                <Button Click="AddNode_Click" Tag="RootFolder">Root Folder</Button>
+                <Button Click="AddNode_Click" Tag="ImageLoad">Image Load</Button>
+                <Button Click="AddNode_Click" Tag="SolidColor">Solid Color</Button>
+                <Button Click="AddNode_Click" Tag="Gradient">Gradient</Button>
+                <Button Click="AddNode_Click" Tag="Noise">Noise</Button>
+                <Separator/>
+                <Label FontWeight="Bold">Filters:</Label>
+                <Button Click="AddNode_Click" Tag="Blur">Blur</Button>
+                <Button Click="AddNode_Click" Tag="Sharpen">Sharpen</Button>
+                <Button Click="AddNode_Click" Tag="BrightnessContrast">Brightness/Contrast</Button>
+                <Separator/>
+                <Label FontWeight="Bold">Combine:</Label>
+                <Button Click="AddNode_Click" Tag="Blend">Blend</Button>
+                <Button Click="AddNode_Click" Tag="Mask">Mask</Button>
+                <Button Click="AddNode_Click" Tag="Composite">Composite</Button>
+                <Separator/>
+                <Label FontWeight="Bold">Special:</Label>
+                <Button Click="AddNode_Click" Tag="NormalMap">Normal Map</Button>
+                <Button Click="AddNode_Click" Tag="Invert">Invert</Button>
+                <Button Click="AddNode_Click" Tag="Levels">Levels</Button>
+                <Separator/>
+                <Label FontWeight="Bold">Output:</Label>
+                <Button Click="AddNode_Click" Tag="Save">Save</Button>
+            </ToolBar>
+        </ToolBarTray>
+
+        <!-- Status bar -->
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Name="StatusText">Ready — click a node to preview it</TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+
+        <!-- Main content -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="1*" MinWidth="250"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Custom node graph canvas -->
+            <controls:GraphCanvas x:Name="NodeGraph" Grid.Column="0"/>
+
+            <!-- Splitter -->
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
+
+            <!-- Preview panel -->
+            <controls:PreviewPanel x:Name="PreviewPanel" Grid.Column="2"/>
+        </Grid>
+    </DockPanel>
+</Window>
