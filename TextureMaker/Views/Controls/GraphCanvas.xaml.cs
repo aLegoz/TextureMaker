@@ -23,31 +23,54 @@ public partial class GraphCanvas : UserControl
     private bool _isDragging;
     private Point _dragStart;
 
-    // Pan state
-    private readonly TranslateTransform _pan = new();
+    // Pan / Zoom state
+    private readonly TranslateTransform _pan   = new();
+    private readonly ScaleTransform     _scale = new(1, 1);
     private bool _isPanning;
     private Point _panStart;
+
+    private const double MinScale = 0.1;
+    private const double MaxScale = 4.0;
 
     public event Action<GraphNodeViewModel?>? SelectionChanged;
 
     public GraphCanvas()
     {
         InitializeComponent();
-        RootGrid.RenderTransform = _pan;
-        MouseWheel           += OnMouseWheel;
-        MouseDown            += OnMouseDown;
-        MouseMove            += OnMouseMove;
-        MouseUp              += OnMouseUp;
+        var tg = new TransformGroup();
+        tg.Children.Add(_scale);
+        tg.Children.Add(_pan);
+        RootGrid.RenderTransform = tg;
+        MouseWheel += OnMouseWheel;
+        MouseDown  += OnMouseDown;
+        MouseMove  += OnMouseMove;
+        MouseUp    += OnMouseUp;
     }
 
-    // ── Pan via wheel (vertical) / Shift+wheel (horizontal) ──────────
+    // ── Zoom via Ctrl+Wheel (cursor as pivot) ─────────────────────────
+    // ── Pan  via Wheel / Shift+Wheel ─────────────────────────────────
     private void OnMouseWheel(object sender, MouseWheelEventArgs e)
     {
-        double delta = e.Delta / 120.0 * 40;
-        if (Keyboard.Modifiers == ModifierKeys.Shift)
-            _pan.X += delta;
+        if (Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            double factor   = e.Delta > 0 ? 1.12 : 1.0 / 1.12;
+            double newScale = Math.Clamp(_scale.ScaleX * factor, MinScale, MaxScale);
+            double actual   = newScale / _scale.ScaleX;
+
+            var mouse = e.GetPosition(this);   // screen-space pivot
+            _pan.X = mouse.X + (_pan.X - mouse.X) * actual;
+            _pan.Y = mouse.Y + (_pan.Y - mouse.Y) * actual;
+            _scale.ScaleX = newScale;
+            _scale.ScaleY = newScale;
+        }
         else
-            _pan.Y += delta;
+        {
+            double delta = e.Delta / 120.0 * 40;
+            if (Keyboard.Modifiers == ModifierKeys.Shift)
+                _pan.X += delta;
+            else
+                _pan.Y += delta;
+        }
         e.Handled = true;
     }
 
