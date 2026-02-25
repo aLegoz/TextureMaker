@@ -24,8 +24,8 @@ public class CompositeNodeViewModel : TextureNodeViewModel
 
     public CompositeNodeViewModel() : base("Composite")
     {
-        RegisterInput(InputBase,    "Base");
-        RegisterInput(InputOverlay, "Overlay");
+        RegisterInput(InputBase,    "Image");
+        RegisterInput(InputOverlay, "Image Layer");
 
         Output.Value = Observable
             .CombineLatest(

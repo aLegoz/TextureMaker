@@ -26,13 +26,13 @@ public class ImageLoadNodeViewModel : TextureNodeViewModel
         private set => this.RaiseAndSetIfChanged(ref _currentRoot, value);
     }
 
-    public InputPin<string> RootFolder { get; } = new() { Name = "Root" };
+    public InputPin<string> RootFolder { get; } = new() { Name = "Path" };
 
     private FileSystemWatcher? _watcher;
 
     public ImageLoadNodeViewModel() : base("Image Load")
     {
-        RootFolder.ViewModel.Name = "Root";
+        RootFolder.ViewModel.Name = "Path";
         AllPins.Add(RootFolder.ViewModel);
 
         // Track current root for the Browse dialog

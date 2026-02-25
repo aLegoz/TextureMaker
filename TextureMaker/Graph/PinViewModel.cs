@@ -15,4 +15,7 @@ public class PinViewModel : ReactiveObject
     }
 
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>"texture" | "color" | "folder"</summary>
+    public string PinType { get; set; } = "texture";
 }

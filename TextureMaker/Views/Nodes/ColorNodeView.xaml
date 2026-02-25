@@ -1,0 +1,14 @@
+<UserControl x:Class="TextureMaker.Views.Nodes.ColorNodeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="4">
+        <Border Height="48" MinWidth="120"
+                BorderBrush="#555" BorderThickness="1"
+                Cursor="Hand" MouseLeftButtonDown="ColorPreview_Click"
+                ToolTip="Click to pick colour">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding SelectedColor}"/>
+            </Border.Background>
+        </Border>
+    </Grid>
+</UserControl>

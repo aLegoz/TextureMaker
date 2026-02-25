@@ -91,6 +91,7 @@
                 <ribbon:RibbonGroup Header="Sources">
                     <ribbon:RibbonButton Label="Root Folder"  Click="AddNode_Click" Tag="RootFolder"        LargeImageSource="{StaticResource Icon.RootFolder}"/>
                     <ribbon:RibbonButton Label="Image Load"   Click="AddNode_Click" Tag="ImageLoad"         LargeImageSource="{StaticResource Icon.ImageLoad}"/>
+                    <ribbon:RibbonButton Label="Color"        Click="AddNode_Click" Tag="Color"             LargeImageSource="{StaticResource Icon.Color}"/>
                     <ribbon:RibbonButton Label="Solid Color"  Click="AddNode_Click" Tag="SolidColor"        LargeImageSource="{StaticResource Icon.SolidColor}"/>
                     <ribbon:RibbonButton Label="Gradient"     Click="AddNode_Click" Tag="Gradient"          LargeImageSource="{StaticResource Icon.Gradient}"/>
                     <ribbon:RibbonButton Label="Noise"        Click="AddNode_Click" Tag="Noise"             LargeImageSource="{StaticResource Icon.Noise}"/>

@@ -13,7 +13,7 @@ public class InvertNodeViewModel : TextureNodeViewModel
 
     public InvertNodeViewModel() : base("Invert")
     {
-        RegisterInput(InputTexture, "Input");
+        RegisterInput(InputTexture, "Image");
         Output.Value = InputTexture.Value
             .Select(tex => Observable.Start(() => Apply(tex), RxApp.TaskpoolScheduler))
             .Switch()

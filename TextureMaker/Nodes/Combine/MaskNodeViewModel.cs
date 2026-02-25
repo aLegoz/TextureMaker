@@ -15,8 +15,8 @@ public class MaskNodeViewModel : TextureNodeViewModel
 
     public MaskNodeViewModel() : base("Mask")
     {
-        RegisterInput(InputTexture, "Texture");
-        RegisterInput(InputMask, "Mask (R)");
+        RegisterInput(InputTexture, "Image");
+        RegisterInput(InputMask, "Image Mask");
         Output.Value = Observable
             .CombineLatest(InputTexture.Value, InputMask.Value, (tex, mask) => (tex, mask))
             .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler)

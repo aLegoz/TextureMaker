@@ -21,7 +21,7 @@ public class SharpenNodeViewModel : TextureNodeViewModel
 
     public SharpenNodeViewModel() : base("Sharpen")
     {
-        RegisterInput(InputTexture, "Input");
+        RegisterInput(InputTexture, "Image");
         Output.Value = Observable
             .CombineLatest(InputTexture.Value, this.WhenAnyValue(x => x.Amount, x => x.Radius),
                 (tex, ar) => (tex, ar.Item1, ar.Item2))

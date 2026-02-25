@@ -17,7 +17,7 @@ public class NormalMapNodeViewModel : TextureNodeViewModel
 
     public NormalMapNodeViewModel() : base("Normal Map")
     {
-        RegisterInput(InputTexture, "Height");
+        RegisterInput(InputTexture, "Image");
         Output.Value = Observable
             .CombineLatest(InputTexture.Value, this.WhenAnyValue(x => x.Strength), (tex, s) => (tex, s))
             .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler)

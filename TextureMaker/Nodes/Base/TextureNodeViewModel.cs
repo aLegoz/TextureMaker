@@ -9,12 +9,12 @@ namespace TextureMaker.Nodes.Base;
 /// </summary>
 public abstract class TextureNodeViewModel : GraphNodeViewModel
 {
-    public OutputPin<TextureData> Output { get; } = new() { Name = "Output" };
+    public OutputPin<TextureData> Output { get; } = new() { Name = "Image" };
 
     protected TextureNodeViewModel(string name)
     {
         Name = name;
-        Output.ViewModel.Name = "Output";
+        Output.ViewModel.Name = "Image";
         AllPins.Add(Output.ViewModel);
     }
 

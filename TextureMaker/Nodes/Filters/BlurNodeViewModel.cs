@@ -16,7 +16,7 @@ public class BlurNodeViewModel : TextureNodeViewModel
 
     public BlurNodeViewModel() : base("Blur")
     {
-        RegisterInput(InputTexture, "Input");
+        RegisterInput(InputTexture, "Image");
         Output.Value = Observable
             .CombineLatest(InputTexture.Value, this.WhenAnyValue(x => x.Sigma), (tex, s) => (tex, s))
             .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler)

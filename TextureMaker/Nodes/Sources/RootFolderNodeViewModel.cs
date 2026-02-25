@@ -13,12 +13,12 @@ public class RootFolderNodeViewModel : GraphNodeViewModel
         set => this.RaiseAndSetIfChanged(ref _folderPath, value);
     }
 
-    public OutputPin<string> FolderOutput { get; } = new() { Name = "Root" };
+    public OutputPin<string> FolderOutput { get; } = new() { Name = "Path" };
 
     public RootFolderNodeViewModel()
     {
         Name = "Root Folder";
-        FolderOutput.ViewModel.Name = "Root";
+        FolderOutput.ViewModel.Name = "Path";
         AllPins.Add(FolderOutput.ViewModel);
 
         FolderOutput.Value = this.WhenAnyValue(x => x.FolderPath)

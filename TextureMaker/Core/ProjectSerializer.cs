@@ -89,6 +89,7 @@ public static class ProjectSerializer
     {
         RootFolderNodeViewModel         => "RootFolder",
         ImageLoadNodeViewModel          => "ImageLoad",
+        ColorNodeViewModel              => "Color",
         SolidColorNodeViewModel         => "SolidColor",
         GradientNodeViewModel           => "Gradient",
         NoiseNodeViewModel              => "Noise",
@@ -113,6 +114,7 @@ public static class ProjectSerializer
         {
             RootFolderNodeViewModel n         => new { folderPath = n.FolderPath },
             ImageLoadNodeViewModel n          => new { filePath = n.FilePath },
+            ColorNodeViewModel n              => new { color = ToHex(n.SelectedColor) },
             SolidColorNodeViewModel n         => new { color = ToHex(n.SelectedColor), width = n.Width, height = n.Height },
             GradientNodeViewModel n           => new { colorA = ToHex(n.ColorA), colorB = ToHex(n.ColorB), direction = (int)n.Direction, width = n.Width, height = n.Height },
             NoiseNodeViewModel n              => new { scale = n.Scale, octaves = n.Octaves, seed = n.Seed, width = n.Width, height = n.Height },
@@ -140,6 +142,9 @@ public static class ProjectSerializer
                 break;
             case ImageLoadNodeViewModel n:
                 n.FilePath = Str(p, "filePath");
+                break;
+            case ColorNodeViewModel n:
+                if (Str(p, "color") is { } cc) n.SelectedColor = FromHex(cc);
                 break;
             case SolidColorNodeViewModel n:
                 if (Str(p, "color") is { } c) n.SelectedColor = FromHex(c);
@@ -228,6 +233,16 @@ public static class ProjectSerializer
                 connected = true;
             }
         }
+        else if (outNode is ColorNodeViewModel cn)
+        {
+            var pin = FindColorPin(inNode, inPinVm);
+            if (pin != null)
+            {
+                var fake = new OutputPin<WpfColor> { Name = outPinName, Value = cn.ColorOutput.Value };
+                pin.Connect(fake);
+                connected = true;
+            }
+        }
 
         if (!connected) return null;
 
@@ -256,6 +271,15 @@ public static class ProjectSerializer
         SaveNodeViewModel x      => ChkStr(x.RootFolder, vm),
         _                        => null
     };
+
+    private static InputPin<WpfColor>? FindColorPin(GraphNodeViewModel n, PinViewModel vm) => n switch
+    {
+        SolidColorNodeViewModel x => ChkColor(x.ColorInput, vm),
+        _                         => null
+    };
+
+    private static InputPin<WpfColor>? ChkColor(InputPin<WpfColor> pin, PinViewModel vm)
+        => pin.ViewModel == vm ? pin : null;
 
     private static InputPin<TextureData>? Chk(InputPin<TextureData> pin, PinViewModel vm)
         => pin.ViewModel == vm ? pin : null;

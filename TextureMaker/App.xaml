@@ -32,6 +32,15 @@
             </DrawingGroup></DrawingImage.Drawing>
         </DrawingImage>
 
+        <!-- Color: solid circle -->
+        <DrawingImage x:Key="Icon.Color">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#50C864"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="13" RadiusY="13"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#2A7A3A" Thickness="2"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#90ECA0"><GeometryDrawing.Geometry><EllipseGeometry Center="12,12" RadiusX="5" RadiusY="5"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
         <!-- Solid Color: 4 color quadrants -->
         <DrawingImage x:Key="Icon.SolidColor">
             <DrawingImage.Drawing><DrawingGroup>
@@ -176,6 +185,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type nodes:ImageLoadNodeViewModel}">
             <nodeViews:ImageLoadNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type nodes:ColorNodeViewModel}">
+            <nodeViews:ColorNodeView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type nodes:SolidColorNodeViewModel}">
             <nodeViews:SolidColorNodeView/>

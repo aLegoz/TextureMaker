@@ -29,7 +29,7 @@ public class LevelsNodeViewModel : TextureNodeViewModel
 
     public LevelsNodeViewModel() : base("Levels")
     {
-        RegisterInput(InputTexture, "Input");
+        RegisterInput(InputTexture, "Image");
         Output.Value = Observable.CombineLatest(
                 InputTexture.Value,
                 this.WhenAnyValue(x => x.InBlack, x => x.InWhite, x => x.Gamma, x => x.OutBlack, x => x.OutWhite),

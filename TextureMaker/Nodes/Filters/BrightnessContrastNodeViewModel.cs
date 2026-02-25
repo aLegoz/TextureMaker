@@ -19,7 +19,7 @@ public class BrightnessContrastNodeViewModel : TextureNodeViewModel
 
     public BrightnessContrastNodeViewModel() : base("Brightness/Contrast")
     {
-        RegisterInput(InputTexture, "Input");
+        RegisterInput(InputTexture, "Image");
         Output.Value = Observable
             .CombineLatest(InputTexture.Value, this.WhenAnyValue(x => x.Brightness, x => x.Contrast),
                 (tex, bc) => (tex, bc.Item1, bc.Item2))

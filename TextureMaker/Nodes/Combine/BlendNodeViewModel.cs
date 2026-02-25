@@ -28,8 +28,8 @@ public class BlendNodeViewModel : TextureNodeViewModel
 
     public BlendNodeViewModel() : base("Blend")
     {
-        RegisterInput(InputA, "Base");
-        RegisterInput(InputB, "Blend");
+        RegisterInput(InputA, "Image A");
+        RegisterInput(InputB, "Image B");
         Output.Value = Observable
             .CombineLatest(InputA.Value, InputB.Value,
                 this.WhenAnyValue(x => x.Mode, x => x.Opacity),

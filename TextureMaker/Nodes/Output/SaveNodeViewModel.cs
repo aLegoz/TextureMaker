@@ -8,7 +8,7 @@ namespace TextureMaker.Nodes.Output;
 public class SaveNodeViewModel : GraphNodeViewModel
 {
     public InputPin<TextureData> InputTexture { get; } = new();
-    public InputPin<string>      RootFolder   { get; } = new() { Name = "Root" };
+    public InputPin<string>      RootFolder   { get; } = new() { Name = "Path" };
 
     private TextureData? _lastTexture;
     public TextureData? LastTexture
@@ -34,11 +34,11 @@ public class SaveNodeViewModel : GraphNodeViewModel
     public SaveNodeViewModel()
     {
         Name = "Save";
-        InputTexture.Name = "Input";
-        InputTexture.ViewModel.Name = "Input";
+        InputTexture.Name = "Image";
+        InputTexture.ViewModel.Name = "Image";
         AllPins.Add(InputTexture.ViewModel);
 
-        RootFolder.ViewModel.Name = "Root";
+        RootFolder.ViewModel.Name = "Path";
         AllPins.Add(RootFolder.ViewModel);
 
         InputTexture.Value

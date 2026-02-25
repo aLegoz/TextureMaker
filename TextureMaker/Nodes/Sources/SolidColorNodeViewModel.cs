@@ -3,14 +3,18 @@ using ReactiveUI;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using TextureMaker.Core;
+using TextureMaker.Graph;
 using TextureMaker.Nodes.Base;
-using WpfColor = System.Windows.Media.Color;
+using WpfColor  = System.Windows.Media.Color;
 using WpfColors = System.Windows.Media.Colors;
 
 namespace TextureMaker.Nodes.Sources;
 
 public class SolidColorNodeViewModel : TextureNodeViewModel
 {
+    // Optional colour override from a connected Color node
+    public InputPin<WpfColor> ColorInput { get; } = new();
+
     private WpfColor _color = WpfColors.Gray;
     public WpfColor SelectedColor
     {
@@ -34,9 +38,24 @@ public class SolidColorNodeViewModel : TextureNodeViewModel
 
     public SolidColorNodeViewModel() : base("Solid Color")
     {
-        Output.Value = this.WhenAnyValue(x => x.SelectedColor, x => x.Width, x => x.Height)
+        ColorInput.ViewModel.Name    = "Color";
+        ColorInput.ViewModel.PinType = "color";
+        AllPins.Insert(0, ColorInput.ViewModel); // input before output visually
+
+        // Use pin colour when connected, own colour otherwise
+        var effectiveColor = Observable.CombineLatest(
+            ColorInput.Value,
+            this.WhenAnyValue(x => x.SelectedColor),
+            ColorInput.ViewModel.WhenAnyValue(x => x.IsConnected),
+            (pin, own, connected) => connected ? pin : own);
+
+        Output.Value = effectiveColor
+            .CombineLatest(
+                this.WhenAnyValue(x => x.Width, x => x.Height),
+                (color, size) => (color, size.Item1, size.Item2))
             .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler)
-            .Select(args => Observable.Start(() => Generate(args.Item1, args.Item2, args.Item3),
+            .Select(args => Observable.Start(
+                () => Generate(args.color, args.Item2, args.Item3),
                 RxApp.TaskpoolScheduler))
             .Switch()
             .ObserveOn(RxApp.MainThreadScheduler);

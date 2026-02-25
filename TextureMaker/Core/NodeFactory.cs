@@ -13,6 +13,7 @@ public static class NodeFactory
     {
         "RootFolder"         => new RootFolderNodeViewModel(),
         "ImageLoad"          => new ImageLoadNodeViewModel(),
+        "Color"              => new ColorNodeViewModel(),
         "SolidColor"         => new SolidColorNodeViewModel(),
         "Gradient"           => new GradientNodeViewModel(),
         "Noise"              => new NoiseNodeViewModel(),

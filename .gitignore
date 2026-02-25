@@ -2,6 +2,7 @@
 bin/
 obj/
 
+
 # Visual Studio / Rider
 .vs/
 .idea/
@@ -10,6 +11,8 @@ obj/
 *.userosscache
 *.sln.docobj
 *.sln.ide
+
+*.ps1
 
 # NuGet
 *.nupkg
