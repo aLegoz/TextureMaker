@@ -50,6 +50,8 @@ public partial class NodeCardView : UserControl
             _                       => null
         };
         if (outputObs != null)
+        {
+            ThumbBorder.Visibility = Visibility.Visible;
             outputObs
                 .ObserveOn(RxApp.TaskpoolScheduler)
                 .Select(tex => tex == null ? ((BitmapSource?)null, false) : MakeThumb(tex))
@@ -57,10 +59,10 @@ public partial class NodeCardView : UserControl
                 .Subscribe(result =>
                 {
                     ThumbImage.Source = result.Item1;
-                    ThumbBorder.Visibility = result.Item1 != null ? Visibility.Visible : Visibility.Collapsed;
                     RenderOptions.SetBitmapScalingMode(ThumbImage,
                         result.Item2 ? BitmapScalingMode.NearestNeighbor : BitmapScalingMode.HighQuality);
                 });
+        }
     }
 
     private static (BitmapSource? Bmp, bool IsSmall) MakeThumb(TextureData tex)
@@ -206,12 +208,15 @@ public partial class NodeCardView : UserControl
     }
 
     public bool TryConnectDataPin(PinViewModel outPinVm, NodeCardView targetCard, PinViewModel inPinVm)
-        => TryConnect(_node, outPinVm, targetCard._node, inPinVm)
+    {
+        if (ReferenceEquals(this, targetCard)) return false;
+        return TryConnect(_node, outPinVm, targetCard._node, inPinVm)
         || TryConnect(targetCard._node, inPinVm, _node, outPinVm)
         || TryConnectString(_node, outPinVm, targetCard._node, inPinVm)
         || TryConnectString(targetCard._node, inPinVm, _node, outPinVm)
         || TryConnectColor(_node, outPinVm, targetCard._node, inPinVm)
         || TryConnectColor(targetCard._node, inPinVm, _node, outPinVm);
+    }
 
     // ── TextureData connections ───────────────────────────────────────
     private static bool TryConnect(

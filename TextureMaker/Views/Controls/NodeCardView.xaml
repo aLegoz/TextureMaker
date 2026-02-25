@@ -5,7 +5,7 @@
             Background="#3C3F41"
             BorderThickness="1"
             CornerRadius="4"
-            MinWidth="160"
+            Width="160"
             Effect="{x:Null}">
         <Border.Style>
             <Style TargetType="Border">
@@ -65,9 +65,10 @@
             <!-- Thumbnail preview -->
             <Border x:Name="ThumbBorder"
                     Background="#111" Margin="4,0,4,4"
+                    Height="90"
                     Visibility="Collapsed">
                 <Image x:Name="ThumbImage"
-                       MaxHeight="90" Stretch="Uniform"/>
+                       Stretch="Uniform"/>
             </Border>
         </StackPanel>
     </Border>
