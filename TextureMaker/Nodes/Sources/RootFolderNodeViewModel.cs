@@ -19,6 +19,7 @@ public class RootFolderNodeViewModel : GraphNodeViewModel
     {
         Name = "Root Folder";
         FolderOutput.ViewModel.Name = "Path";
+        FolderOutput.ViewModel.PinType = "folder";
         AllPins.Add(FolderOutput.ViewModel);
 
         FolderOutput.Value = this.WhenAnyValue(x => x.FolderPath)

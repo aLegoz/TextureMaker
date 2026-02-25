@@ -39,6 +39,7 @@ public class SaveNodeViewModel : GraphNodeViewModel
         AllPins.Add(InputTexture.ViewModel);
 
         RootFolder.ViewModel.Name = "Path";
+        RootFolder.ViewModel.PinType = "folder";
         AllPins.Add(RootFolder.ViewModel);
 
         InputTexture.Value

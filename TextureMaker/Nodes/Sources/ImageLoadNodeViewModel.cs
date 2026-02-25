@@ -33,6 +33,7 @@ public class ImageLoadNodeViewModel : TextureNodeViewModel
     public ImageLoadNodeViewModel() : base("Image Load")
     {
         RootFolder.ViewModel.Name = "Path";
+        RootFolder.ViewModel.PinType = "folder";
         AllPins.Add(RootFolder.ViewModel);
 
         // Track current root for the Browse dialog

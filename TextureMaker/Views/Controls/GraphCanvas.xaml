@@ -13,7 +13,7 @@
         <!-- Drag-connection overlay (temp bezier while drawing) -->
         <!-- IsHitTestVisible toggled in code-behind during drag -->
         <Canvas Name="DragCanvas" IsHitTestVisible="False" Background="Transparent">
-            <Path Name="DragPath" Stroke="#FF8C00" StrokeThickness="2" Visibility="Collapsed">
+            <Path Name="DragPath" StrokeThickness="2" Visibility="Collapsed">
                 <Path.Data>
                     <PathGeometry/>
                 </Path.Data>

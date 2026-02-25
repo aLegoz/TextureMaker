@@ -190,7 +190,7 @@ public partial class GraphCanvas : UserControl
     {
         var path = new Path
         {
-            Stroke = new SolidColorBrush(Color.FromRgb(200, 160, 50)),
+            Stroke = PinStroke(conn.OutputPin.PinType),
             StrokeThickness = 2,
             IsHitTestVisible = false
         };
@@ -198,6 +198,13 @@ public partial class GraphCanvas : UserControl
         _connectionPaths[conn] = path;
         UpdateConnectionPath(conn, path);
     }
+
+    private static Brush PinStroke(string pinType) => pinType switch
+    {
+        "color"  => new SolidColorBrush(Color.FromRgb(80, 200, 100)),
+        "folder" => new SolidColorBrush(Colors.LightSteelBlue),
+        _        => new SolidColorBrush(Color.FromRgb(200, 160, 50)),
+    };
 
     private void RemoveConnectionPath(ConnectionViewModel conn)
     {
@@ -250,6 +257,8 @@ public partial class GraphCanvas : UserControl
         _dragSourceCard = card;
         _isDragging     = true;
         _dragStart      = ConnectionCanvas.PointFromScreen(screenPt);
+        DragPath.Data       = new PathGeometry(); // clear stale data from previous drag
+        DragPath.Stroke     = PinStroke(pin.PinType);
         DragPath.Visibility = Visibility.Visible;
         // Enable hit-testing so CaptureMouse works, then capture
         DragCanvas.IsHitTestVisible = true;
