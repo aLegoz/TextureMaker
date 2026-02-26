@@ -1,9 +1,15 @@
 <UserControl x:Class="TextureMaker.Views.Nodes.NormalMapNodeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="4" Orientation="Horizontal">
-        <TextBlock Text="Strength:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#CCC"/>
-        <Slider Width="80" Minimum="0.1" Maximum="10" Value="{Binding Strength}" Margin="0,0,4,0"/>
-        <TextBlock Text="{Binding Strength, StringFormat=F1}" VerticalAlignment="Center" Foreground="#CCC"/>
-    </StackPanel>
+    <Grid Margin="4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="44"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="0" Text="Strength:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#CCC"/>
+        <Slider Grid.Column="1" Minimum="0.1" Maximum="10" Value="{Binding Strength}" Margin="0,0,4,0"/>
+        <TextBox Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"
+                 Text="{Binding Strength, StringFormat=F1, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+    </Grid>
 </UserControl>

@@ -34,7 +34,7 @@
                     <TextBlock Text="{Binding Name}"
                                Foreground="White"
                                FontWeight="SemiBold"
-                               FontSize="11"
+                               FontSize="12"
                                VerticalAlignment="Center"/>
                     <Button Content="×"
                             HorizontalAlignment="Right"

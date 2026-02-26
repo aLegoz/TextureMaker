@@ -52,7 +52,7 @@
         <Border Grid.Row="1" Background="#2D2D2D" Padding="4,2">
             <TextBlock Name="InfoText"
                        Foreground="#CCC"
-                       FontSize="11"
+                       FontSize="12"
                        FontFamily="Consolas"
                        Text="–"/>
         </Border>

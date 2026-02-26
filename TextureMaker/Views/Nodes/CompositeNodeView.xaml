@@ -3,31 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Margin="4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="52"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="38"/>
+            <ColumnDefinition Width="44"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
-        <!-- Offset X -->
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Offset X:" VerticalAlignment="Center" Margin="0,0,4,4" Foreground="#CCC"/>
         <Slider    Grid.Row="0" Grid.Column="1" Minimum="-2048" Maximum="2048" SmallChange="1" LargeChange="16"
                    Value="{Binding OffsetX}" Margin="0,0,4,4"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding OffsetX, StringFormat=F0}" VerticalAlignment="Center" Margin="0,0,0,4" Foreground="#CCC"/>
-
-        <!-- Offset Y -->
+        <TextBox   Grid.Row="0" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,4"
+                   Text="{Binding OffsetX, StringFormat=F0, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Offset Y:" VerticalAlignment="Center" Margin="0,0,4,4" Foreground="#CCC"/>
         <Slider    Grid.Row="1" Grid.Column="1" Minimum="-2048" Maximum="2048" SmallChange="1" LargeChange="16"
                    Value="{Binding OffsetY}" Margin="0,0,4,4"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding OffsetY, StringFormat=F0}" VerticalAlignment="Center" Margin="0,0,0,4" Foreground="#CCC"/>
-
-        <!-- Opacity -->
+        <TextBox   Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,4"
+                   Text="{Binding OffsetY, StringFormat=F0, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Opacity:" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#CCC"/>
         <Slider    Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Opacity}" Margin="0,0,4,0"/>
-        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Opacity, StringFormat=F2}" VerticalAlignment="Center" Foreground="#CCC"/>
+        <TextBox   Grid.Row="2" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"
+                   Text="{Binding Opacity, StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
     </Grid>
 </UserControl>

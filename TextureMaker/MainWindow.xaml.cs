@@ -1,11 +1,10 @@
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Controls.Ribbon;
 using System.Windows.Input;
 using Microsoft.Win32;
+using ModernWpf;
 using TextureMaker.Core;
 using TextureMaker.Graph;
 using TextureMaker.Nodes.Base;
@@ -13,7 +12,7 @@ using TextureMaker.Nodes.Output;
 
 namespace TextureMaker;
 
-public partial class MainWindow : RibbonWindow
+public partial class MainWindow : Window
 {
     private GraphViewModel _graph = new();
     private int _nodeCount = 0;
@@ -29,32 +28,13 @@ public partial class MainWindow : RibbonWindow
 
     public MainWindow()
     {
+        ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
         InitializeComponent();
         NodeGraph.SetGraph(_graph);
         NodeGraph.SelectionChanged += OnSelectionChanged;
         FloatCanvas.SizeChanged    += FloatCanvas_SizeChanged;
         Loaded  += OnLoaded;
         Closing += OnClosing;
-    }
-
-    [DllImport("user32.dll")] private static extern int GetSystemMetrics(int n);
-
-    protected override void OnStateChanged(EventArgs e)
-    {
-        base.OnStateChanged(e);
-        if (WindowState == WindowState.Maximized)
-        {
-            var src  = PresentationSource.FromVisual(this);
-            double dpiX = src?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
-            double dpiY = src?.CompositionTarget?.TransformToDevice.M22 ?? 1.0;
-            double bx = (GetSystemMetrics(32) + GetSystemMetrics(92)) / dpiX;
-            double by = (GetSystemMetrics(33) + GetSystemMetrics(92)) / dpiY;
-            RootPanel.Margin = new Thickness(bx, by, bx, by);
-        }
-        else
-        {
-            RootPanel.Margin = default;
-        }
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -162,6 +142,7 @@ public partial class MainWindow : RibbonWindow
         _nodeCount = 0;
         UpdateTitle();
         StatusText.Text = "New project";
+        FileNameText.Text = "New Project";
     }
 
     private void OpenProject_Click(object sender, RoutedEventArgs e)
@@ -215,8 +196,12 @@ public partial class MainWindow : RibbonWindow
         }
     }
 
-    private void UpdateTitle() =>
-        Title = _currentFilePath == null ? "TextureMaker" : $"TextureMaker — {Path.GetFileName(_currentFilePath)}";
+    private void UpdateTitle()
+    {
+        var name = _currentFilePath == null ? null : Path.GetFileName(_currentFilePath);
+        Title = name == null ? "TextureMaker" : $"TextureMaker — {name}";
+        FileNameText.Text = name ?? "New Project";
+    }
 
     // ── Float card drag ───────────────────────────────────────────────
 

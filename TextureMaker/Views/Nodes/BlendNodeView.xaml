@@ -6,18 +6,19 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="35"/>
+            <ColumnDefinition Width="44"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Mode:" VerticalAlignment="Center" Margin="0,0,6,4" Foreground="#CCC"/>
-        <ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,4"
-                  ItemsSource="{Binding Source={x:Static combine:BlendModeValues.All}}"
-                  SelectedItem="{Binding Mode}"/>
+        <ComboBox  Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,4"
+                   ItemsSource="{Binding Source={x:Static combine:BlendModeValues.All}}"
+                   SelectedItem="{Binding Mode}"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Opacity:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#CCC"/>
-        <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Opacity}"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Opacity, StringFormat=F2}" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="#CCC"/>
+        <Slider    Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding Opacity}" Margin="0,0,4,0"/>
+        <TextBox   Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"
+                   Text="{Binding Opacity, StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
     </Grid>
 </UserControl>

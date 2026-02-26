@@ -1,13 +1,11 @@
 <UserControl x:Class="TextureMaker.Views.Nodes.RootFolderNodeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="4" MinWidth="180">
-        <StackPanel Orientation="Horizontal" Margin="0,4">
-            <TextBox Width="130"
-                     Text="{Binding FolderPath, UpdateSourceTrigger=PropertyChanged}"
-                     IsReadOnly="True"
-                     ToolTip="Root folder path"/>
-            <Button Content="…" Width="26" Margin="4,0,0,0" Click="Browse_Click"/>
-        </StackPanel>
-    </StackPanel>
+    <DockPanel Margin="4,2">
+        <Button DockPanel.Dock="Right" Content="…" Width="26" Margin="4,0,0,0"
+                Click="Browse_Click" ToolTip="Browse folder"/>
+        <TextBox Text="{Binding FolderPath, UpdateSourceTrigger=PropertyChanged}"
+                 IsReadOnly="True"
+                 ToolTip="Root folder path"/>
+    </DockPanel>
 </UserControl>

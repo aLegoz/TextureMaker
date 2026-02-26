@@ -5,17 +5,19 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="44"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Amount:" VerticalAlignment="Center" Margin="0,0,6,4" Foreground="#CCC"/>
-        <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="5" Value="{Binding Amount}" Margin="0,0,0,4"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding Amount, StringFormat=F1}" VerticalAlignment="Center" Margin="4,0,0,4" Foreground="#CCC"/>
+        <Slider    Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="5" Value="{Binding Amount}" Margin="0,0,4,4"/>
+        <TextBox   Grid.Row="0" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,4"
+                   Text="{Binding Amount, StringFormat=F1, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Radius:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#CCC"/>
-        <Slider Grid.Row="1" Grid.Column="1" Minimum="0.1" Maximum="10" Value="{Binding Radius}"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding Radius, StringFormat=F1}" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="#CCC"/>
+        <Slider    Grid.Row="1" Grid.Column="1" Minimum="0.1" Maximum="10" Value="{Binding Radius}" Margin="0,0,4,0"/>
+        <TextBox   Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"
+                   Text="{Binding Radius, StringFormat=F1, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
     </Grid>
 </UserControl>

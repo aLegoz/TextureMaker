@@ -12,10 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\TextureMaker.ico"/>
+    <Resource Include="Resources\TextureMaker.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
     <PackageReference Include="ReactiveUI.WPF" Version="20.1.1" />
     <PackageReference Include="DynamicData" Version="8.4.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />

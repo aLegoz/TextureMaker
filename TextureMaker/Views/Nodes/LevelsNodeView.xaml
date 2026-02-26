@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Grid Margin="4">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="60"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="35"/>
+            <ColumnDefinition Width="44"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,20 +14,25 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="In Black:" VerticalAlignment="Center" Margin="0,0,0,3" Foreground="#CCC"/>
-        <Slider Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding InBlack}" Margin="0,0,0,3"/>
-        <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding InBlack, StringFormat=F2}" VerticalAlignment="Center" Margin="4,0,0,3" Foreground="#CCC"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="In White:" VerticalAlignment="Center" Margin="0,0,0,3" Foreground="#CCC"/>
-        <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding InWhite}" Margin="0,0,0,3"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding InWhite, StringFormat=F2}" VerticalAlignment="Center" Margin="4,0,0,3" Foreground="#CCC"/>
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Gamma:" VerticalAlignment="Center" Margin="0,0,0,3" Foreground="#CCC"/>
-        <Slider Grid.Row="2" Grid.Column="1" Minimum="0.1" Maximum="4" Value="{Binding Gamma}" Margin="0,0,0,3"/>
-        <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding Gamma, StringFormat=F2}" VerticalAlignment="Center" Margin="4,0,0,3" Foreground="#CCC"/>
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Out Black:" VerticalAlignment="Center" Margin="0,0,0,3" Foreground="#CCC"/>
-        <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding OutBlack}" Margin="0,0,0,3"/>
-        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding OutBlack, StringFormat=F2}" VerticalAlignment="Center" Margin="4,0,0,3" Foreground="#CCC"/>
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Out White:" VerticalAlignment="Center" Foreground="#CCC"/>
-        <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding OutWhite}"/>
-        <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding OutWhite, StringFormat=F2}" VerticalAlignment="Center" Margin="4,0,0,0" Foreground="#CCC"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="In Black:"  VerticalAlignment="Center" Margin="0,0,6,3" Foreground="#CCC"/>
+        <Slider    Grid.Row="0" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding InBlack}"  Margin="0,0,4,3"/>
+        <TextBox   Grid.Row="0" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"  Margin="0,0,0,3"
+                   Text="{Binding InBlack,  StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="In White:"  VerticalAlignment="Center" Margin="0,0,6,3" Foreground="#CCC"/>
+        <Slider    Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding InWhite}"  Margin="0,0,4,3"/>
+        <TextBox   Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"  Margin="0,0,0,3"
+                   Text="{Binding InWhite,  StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Gamma:"    VerticalAlignment="Center" Margin="0,0,6,3" Foreground="#CCC"/>
+        <Slider    Grid.Row="2" Grid.Column="1" Minimum="0.1" Maximum="4" Value="{Binding Gamma}"  Margin="0,0,4,3"/>
+        <TextBox   Grid.Row="2" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"  Margin="0,0,0,3"
+                   Text="{Binding Gamma,    StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Out Black:" VerticalAlignment="Center" Margin="0,0,6,3" Foreground="#CCC"/>
+        <Slider    Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding OutBlack}" Margin="0,0,4,3"/>
+        <TextBox   Grid.Row="3" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"  Margin="0,0,0,3"
+                   Text="{Binding OutBlack, StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Out White:" VerticalAlignment="Center" Margin="0,0,6,0" Foreground="#CCC"/>
+        <Slider    Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="1" Value="{Binding OutWhite}" Margin="0,0,4,0"/>
+        <TextBox   Grid.Row="4" Grid.Column="2" TextAlignment="Center" VerticalAlignment="Center"
+                   Text="{Binding OutWhite, StringFormat=F2, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"/>
     </Grid>
 </UserControl>

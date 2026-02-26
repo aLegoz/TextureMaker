@@ -131,7 +131,7 @@ public partial class NodeCardView : UserControl
     {
         var label = new TextBlock
         {
-            Text = name, Foreground = Brushes.LightGray, FontSize = 10,
+            Text = name, Foreground = new SolidColorBrush(Color.FromRgb(0xAA, 0xAA, 0xAA)), FontSize = 11,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(isOutput ? 0 : 3, 0, isOutput ? 3 : 0, 0)
         };
