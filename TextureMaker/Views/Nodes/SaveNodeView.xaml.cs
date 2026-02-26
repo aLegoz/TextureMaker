@@ -68,22 +68,28 @@ public partial class SaveNodeView : UserControl
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
-            var ext = Path.GetExtension(fullPath).ToLowerInvariant();
-            IImageEncoder encoder = ext switch
-            {
-                ".jpg" or ".jpeg" => new JpegEncoder(),
-                ".bmp"            => new BmpEncoder(),
-                ".tiff" or ".tif" => new TiffEncoder(),
-                _                 => new PngEncoder()
-            };
-            using var stream = File.OpenWrite(fullPath);
-            vm.LastTexture!.Image.Save(stream, encoder);
+            SaveTexture(vm, fullPath);
             MessageBox.Show($"Saved:\n{fullPath}", "Save", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
         {
             MessageBox.Show($"Error: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    /// <summary>Saves the texture to disk without showing a MessageBox. Throws on error.</summary>
+    internal static void SaveTexture(SaveNodeViewModel vm, string fullPath)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+        var ext = Path.GetExtension(fullPath).ToLowerInvariant();
+        IImageEncoder encoder = ext switch
+        {
+            ".jpg" or ".jpeg" => new JpegEncoder(),
+            ".bmp"            => new BmpEncoder(),
+            ".tiff" or ".tif" => new TiffEncoder(),
+            _                 => new PngEncoder()
+        };
+        using var stream = File.OpenWrite(fullPath);
+        vm.LastTexture!.Image.Save(stream, encoder);
     }
 }

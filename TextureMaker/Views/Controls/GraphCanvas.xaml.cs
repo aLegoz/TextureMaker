@@ -203,6 +203,7 @@ public partial class GraphCanvas : UserControl
     {
         "color"  => new SolidColorBrush(Color.FromRgb(80, 200, 100)),
         "folder" => new SolidColorBrush(Colors.LightSteelBlue),
+        "bool"   => new SolidColorBrush(Color.FromRgb(180, 100, 210)),
         _        => new SolidColorBrush(Color.FromRgb(200, 160, 50)),
     };
 

@@ -93,6 +93,7 @@ public static class ProjectSerializer
         SolidColorNodeViewModel         => "SolidColor",
         GradientNodeViewModel           => "Gradient",
         NoiseNodeViewModel              => "Noise",
+        ToggleNodeViewModel             => "Toggle",
         BlurNodeViewModel               => "Blur",
         SharpenNodeViewModel            => "Sharpen",
         BrightnessContrastNodeViewModel => "BrightnessContrast",
@@ -102,6 +103,7 @@ public static class ProjectSerializer
         NormalMapNodeViewModel          => "NormalMap",
         InvertNodeViewModel             => "Invert",
         LevelsNodeViewModel             => "Levels",
+        SwitchNodeViewModel             => "Switch",
         SaveNodeViewModel               => "Save",
         _                               => "Unknown"
     };
@@ -118,6 +120,7 @@ public static class ProjectSerializer
             SolidColorNodeViewModel n         => new { color = ToHex(n.SelectedColor), width = n.Width, height = n.Height },
             GradientNodeViewModel n           => new { colorA = ToHex(n.ColorA), colorB = ToHex(n.ColorB), direction = (int)n.Direction, width = n.Width, height = n.Height },
             NoiseNodeViewModel n              => new { scale = n.Scale, octaves = n.Octaves, seed = n.Seed, width = n.Width, height = n.Height },
+            ToggleNodeViewModel n             => new { value = n.IsActive },
             BlurNodeViewModel n               => new { sigma = n.Sigma },
             SharpenNodeViewModel n            => new { amount = n.Amount, radius = n.Radius },
             BrightnessContrastNodeViewModel n => new { brightness = n.Brightness, contrast = n.Contrast },
@@ -125,6 +128,7 @@ public static class ProjectSerializer
             CompositeNodeViewModel n          => new { offsetX = n.OffsetX, offsetY = n.OffsetY, opacity = n.Opacity },
             NormalMapNodeViewModel n          => new { strength = n.Strength },
             LevelsNodeViewModel n             => new { inBlack = n.InBlack, inWhite = n.InWhite, gamma = n.Gamma, outBlack = n.OutBlack, outWhite = n.OutWhite },
+            SwitchNodeViewModel n             => new { active = n.IsActive },
             SaveNodeViewModel n               => new { fileName = n.FileName },
             _                                 => (object)new { }
         };
@@ -195,6 +199,12 @@ public static class ProjectSerializer
                 n.OutBlack = Flt(p, "outBlack", n.OutBlack);
                 n.OutWhite = Flt(p, "outWhite", n.OutWhite);
                 break;
+            case ToggleNodeViewModel n:
+                n.IsActive = Bool(p, "value", false);
+                break;
+            case SwitchNodeViewModel n:
+                n.IsActive = Bool(p, "active", false);
+                break;
             case SaveNodeViewModel n:
                 n.FileName = Str(p, "fileName") ?? "";
                 break;
@@ -243,6 +253,16 @@ public static class ProjectSerializer
                 connected = true;
             }
         }
+        else if (outNode is ToggleNodeViewModel tog)
+        {
+            var pin = FindBoolPin(inNode, inPinVm);
+            if (pin != null)
+            {
+                var fake = new OutputPin<bool> { Name = outPinName, Value = tog.BoolOutput.Value };
+                pin.Connect(fake);
+                connected = true;
+            }
+        }
 
         if (!connected) return null;
 
@@ -261,6 +281,7 @@ public static class ProjectSerializer
         NormalMapNodeViewModel x          => Chk(x.InputTexture, vm),
         InvertNodeViewModel x             => Chk(x.InputTexture, vm),
         LevelsNodeViewModel x             => Chk(x.InputTexture, vm),
+        SwitchNodeViewModel x             => Chk(x.IfTrue, vm) ?? Chk(x.IfFalse, vm),
         SaveNodeViewModel x               => Chk(x.InputTexture, vm),
         _                                 => null
     };
@@ -279,6 +300,15 @@ public static class ProjectSerializer
     };
 
     private static InputPin<WpfColor>? ChkColor(InputPin<WpfColor> pin, PinViewModel vm)
+        => pin.ViewModel == vm ? pin : null;
+
+    private static InputPin<bool>? FindBoolPin(GraphNodeViewModel n, PinViewModel vm) => n switch
+    {
+        SwitchNodeViewModel x => ChkBool(x.ConditionPin, vm),
+        _                     => null
+    };
+
+    private static InputPin<bool>? ChkBool(InputPin<bool> pin, PinViewModel vm)
         => pin.ViewModel == vm ? pin : null;
 
     private static InputPin<TextureData>? Chk(InputPin<TextureData> pin, PinViewModel vm)
@@ -313,4 +343,9 @@ public static class ProjectSerializer
 
     private static float Flt(JsonElement el, string key, float fallback = 0f)
         => el.TryGetProperty(key, out var p) && p.TryGetSingle(out float v) ? v : fallback;
+
+    private static bool Bool(JsonElement el, string key, bool fallback = false)
+        => el.TryGetProperty(key, out var p) && p.ValueKind == JsonValueKind.True ? true
+         : el.TryGetProperty(key, out p)     && p.ValueKind == JsonValueKind.False ? false
+         : fallback;
 }

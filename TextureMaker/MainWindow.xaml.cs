@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -9,6 +10,7 @@ using TextureMaker.Core;
 using TextureMaker.Graph;
 using TextureMaker.Nodes.Base;
 using TextureMaker.Nodes.Output;
+using TextureMaker.Views.Nodes;
 
 namespace TextureMaker;
 
@@ -17,6 +19,7 @@ public partial class MainWindow : Window
     private GraphViewModel _graph = new();
     private int _nodeCount = 0;
     private string? _currentFilePath;
+    private bool _isDirty;
     private IObservable<TextureData?>? _currentPreviewObs;
 
     // Float card drag state
@@ -35,6 +38,7 @@ public partial class MainWindow : Window
         FloatCanvas.SizeChanged    += FloatCanvas_SizeChanged;
         Loaded  += OnLoaded;
         Closing += OnClosing;
+        SubscribeGraphDirty();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -66,6 +70,12 @@ public partial class MainWindow : Window
 
     private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        if (!PromptSaveIfDirty())
+        {
+            e.Cancel = true;
+            return;
+        }
+
         new AppSettings
         {
             PreviewLeft   = Canvas.GetLeft(FloatCard),
@@ -131,15 +141,55 @@ public partial class MainWindow : Window
         StatusText.Text = $"Added: {node.Name}";
     }
 
+    // ── Dirty tracking ────────────────────────────────────────────────
+
+    private void SubscribeGraphDirty()
+    {
+        _graph.Nodes.CollectionChanged       += OnGraphChanged;
+        _graph.Connections.CollectionChanged += OnGraphChanged;
+    }
+
+    private void OnGraphChanged(object? sender,
+        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        => _isDirty = true;
+
+    /// <summary>
+    /// Prompts to save if there are unsaved changes.
+    /// Returns true if it is safe to proceed (saved or discarded), false if the user cancelled.
+    /// </summary>
+    private bool PromptSaveIfDirty()
+    {
+        if (!_isDirty) return true;
+
+        var result = MessageBox.Show(
+            "The project has unsaved changes.\nSave before continuing?",
+            "Unsaved Changes",
+            MessageBoxButton.YesNoCancel,
+            MessageBoxImage.Warning);
+
+        if (result == MessageBoxResult.Cancel) return false;
+
+        if (result == MessageBoxResult.Yes)
+        {
+            SaveProject_Click(this, new RoutedEventArgs());
+            return !_isDirty; // false if Save As was cancelled
+        }
+
+        return true; // No — discard changes
+    }
+
     // ── File menu handlers ────────────────────────────────────────────
 
     private void NewProject_Click(object sender, RoutedEventArgs e)
     {
+        if (!PromptSaveIfDirty()) return;
+
         _graph.Connections.Clear();
         _graph.Nodes.Clear();
         FloatPreviewPanel.ClearPreview();
         _currentFilePath = null;
         _nodeCount = 0;
+        _isDirty = false;
         UpdateTitle();
         StatusText.Text = "New project";
         FileNameText.Text = "New Project";
@@ -147,6 +197,8 @@ public partial class MainWindow : Window
 
     private void OpenProject_Click(object sender, RoutedEventArgs e)
     {
+        if (!PromptSaveIfDirty()) return;
+
         var dlg = new OpenFileDialog { Filter = "TextureMaker Project|*.txmk" };
         if (dlg.ShowDialog() != true) return;
         try
@@ -154,9 +206,11 @@ public partial class MainWindow : Window
             _graph = ProjectSerializer.Load(dlg.FileName);
             NodeGraph.SetGraph(_graph);
             NodeGraph.SelectionChanged += OnSelectionChanged;
+            SubscribeGraphDirty();
             FloatPreviewPanel.ClearPreview();
             _currentFilePath = dlg.FileName;
             _nodeCount = _graph.Nodes.Count;
+            _isDirty = false;
             UpdateTitle();
             StatusText.Text = $"Loaded: {Path.GetFileName(dlg.FileName)}";
         }
@@ -187,6 +241,7 @@ public partial class MainWindow : Window
         try
         {
             ProjectSerializer.Save(_graph, _currentFilePath!);
+            _isDirty = false;
             StatusText.Text = $"Saved: {Path.GetFileName(_currentFilePath!)}";
         }
         catch (Exception ex)
@@ -201,6 +256,43 @@ public partial class MainWindow : Window
         var name = _currentFilePath == null ? null : Path.GetFileName(_currentFilePath);
         Title = name == null ? "TextureMaker" : $"TextureMaker — {name}";
         FileNameText.Text = name ?? "New Project";
+    }
+
+    private async void ExportAll_Click(object sender, RoutedEventArgs e)
+    {
+        var nodes = _graph.Nodes.OfType<SaveNodeViewModel>()
+            .Where(n => n.LastTexture != null && n.ResolveFullPath() != null)
+            .ToList();
+
+        if (nodes.Count == 0)
+        {
+            StatusText.Text = "No Save nodes ready to export.";
+            return;
+        }
+
+        ExportProgress.Maximum = nodes.Count;
+        ExportProgress.Value = 0;
+        ExportProgress.Visibility = Visibility.Visible;
+
+        int ok = 0, fail = 0;
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            var n = nodes[i];
+            var path = n.ResolveFullPath()!;
+            StatusText.Text = $"Exporting {i + 1}/{nodes.Count}: {Path.GetFileName(path)}…";
+            try
+            {
+                await Task.Run(() => SaveNodeView.SaveTexture(n, path));
+                ok++;
+            }
+            catch { fail++; }
+            ExportProgress.Value = i + 1;
+        }
+
+        ExportProgress.Visibility = Visibility.Collapsed;
+        StatusText.Text = fail == 0
+            ? $"Exported {ok} texture{(ok != 1 ? "s" : "")}."
+            : $"Exported {ok}, failed {fail}.";
     }
 
     // ── Float card drag ───────────────────────────────────────────────

@@ -17,6 +17,7 @@ public static class NodeFactory
         "SolidColor"         => new SolidColorNodeViewModel(),
         "Gradient"           => new GradientNodeViewModel(),
         "Noise"              => new NoiseNodeViewModel(),
+        "Toggle"             => new ToggleNodeViewModel(),
         "Blur"               => new BlurNodeViewModel(),
         "Sharpen"            => new SharpenNodeViewModel(),
         "BrightnessContrast" => new BrightnessContrastNodeViewModel(),
@@ -26,6 +27,7 @@ public static class NodeFactory
         "NormalMap"          => new NormalMapNodeViewModel(),
         "Invert"             => new InvertNodeViewModel(),
         "Levels"             => new LevelsNodeViewModel(),
+        "Switch"             => new SwitchNodeViewModel(),
         "Save"               => new SaveNodeViewModel(),
         _                    => null
     };

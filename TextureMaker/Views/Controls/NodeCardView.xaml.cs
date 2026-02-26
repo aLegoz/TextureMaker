@@ -17,6 +17,7 @@ using TextureMaker.Nodes.Output;
 using TextureMaker.Nodes.Sources;
 using TextureMaker.Nodes.Special;
 using WpfColor = System.Windows.Media.Color;
+using WpfColors = System.Windows.Media.Colors;
 
 namespace TextureMaker.Views.Controls;
 
@@ -124,6 +125,7 @@ public partial class NodeCardView : UserControl
     {
         "color"  => new SolidColorBrush(Color.FromRgb(80, 200, 100)),
         "folder" => Brushes.LightSteelBlue,
+        "bool"   => new SolidColorBrush(Color.FromRgb(180, 100, 210)),
         _        => Brushes.Orange,
     };
 
@@ -215,7 +217,9 @@ public partial class NodeCardView : UserControl
         || TryConnectString(_node, outPinVm, targetCard._node, inPinVm)
         || TryConnectString(targetCard._node, inPinVm, _node, outPinVm)
         || TryConnectColor(_node, outPinVm, targetCard._node, inPinVm)
-        || TryConnectColor(targetCard._node, inPinVm, _node, outPinVm);
+        || TryConnectColor(targetCard._node, inPinVm, _node, outPinVm)
+        || TryConnectBool(_node, outPinVm, targetCard._node, inPinVm)
+        || TryConnectBool(targetCard._node, inPinVm, _node, outPinVm);
     }
 
     // ── TextureData connections ───────────────────────────────────────
@@ -262,6 +266,7 @@ public partial class NodeCardView : UserControl
         FindInputPin(node, pinVm)?.Disconnect();
         FindStringInputPin(node, pinVm)?.Disconnect();
         FindColorInputPin(node, pinVm)?.Disconnect();
+        FindBoolInputPin(node, pinVm)?.Disconnect();
     }
 
     private static InputPin<string>? FindStringInputPin(GraphNodeViewModel node, PinViewModel vm) => node switch
@@ -276,17 +281,18 @@ public partial class NodeCardView : UserControl
 
     private static InputPin<TextureData>? FindInputPin(GraphNodeViewModel node, PinViewModel vm) => node switch
     {
-        BlurNodeViewModel n              => Match(n.InputTexture, vm),
-        SharpenNodeViewModel n           => Match(n.InputTexture, vm),
+        BlurNodeViewModel n               => Match(n.InputTexture, vm),
+        SharpenNodeViewModel n            => Match(n.InputTexture, vm),
         BrightnessContrastNodeViewModel n => Match(n.InputTexture, vm),
-        BlendNodeViewModel n             => Match(n.InputA, vm) ?? Match(n.InputB, vm),
-        CompositeNodeViewModel n         => Match(n.InputBase, vm) ?? Match(n.InputOverlay, vm),
-        MaskNodeViewModel n              => Match(n.InputTexture, vm) ?? Match(n.InputMask, vm),
-        NormalMapNodeViewModel n         => Match(n.InputTexture, vm),
-        InvertNodeViewModel n            => Match(n.InputTexture, vm),
-        LevelsNodeViewModel n            => Match(n.InputTexture, vm),
-        SaveNodeViewModel n              => Match(n.InputTexture, vm),
-        _                               => null
+        BlendNodeViewModel n              => Match(n.InputA, vm) ?? Match(n.InputB, vm),
+        CompositeNodeViewModel n          => Match(n.InputBase, vm) ?? Match(n.InputOverlay, vm),
+        MaskNodeViewModel n               => Match(n.InputTexture, vm) ?? Match(n.InputMask, vm),
+        NormalMapNodeViewModel n          => Match(n.InputTexture, vm),
+        InvertNodeViewModel n             => Match(n.InputTexture, vm),
+        LevelsNodeViewModel n             => Match(n.InputTexture, vm),
+        SaveNodeViewModel n               => Match(n.InputTexture, vm),
+        SwitchNodeViewModel n             => Match(n.IfTrue, vm) ?? Match(n.IfFalse, vm),
+        _                                 => null
     };
 
     private static InputPin<TextureData>? Match(InputPin<TextureData> pin, PinViewModel vm)
@@ -320,5 +326,31 @@ public partial class NodeCardView : UserControl
     };
 
     private static InputPin<WpfColor>? MatchColor(InputPin<WpfColor> pin, PinViewModel vm)
+        => pin.ViewModel == vm ? pin : null;
+
+    // ── Bool connections ──────────────────────────────────────────────
+    private static bool TryConnectBool(
+        GraphNodeViewModel outNode, PinViewModel outPinVm,
+        GraphNodeViewModel inNode,  PinViewModel inPinVm)
+    {
+        if (!outPinVm.IsOutput || inPinVm.IsOutput) return false;
+        if (outNode is not ToggleNodeViewModel tn) return false;
+
+        var inputPin = FindBoolInputPin(inNode, inPinVm);
+        if (inputPin == null) return false;
+
+        var fakeOut = new OutputPin<bool> { Name = outPinVm.Name, Value = tn.BoolOutput.Value };
+        fakeOut.ViewModel.IsConnected = true;
+        inputPin.Connect(fakeOut);
+        return true;
+    }
+
+    private static InputPin<bool>? FindBoolInputPin(GraphNodeViewModel node, PinViewModel vm) => node switch
+    {
+        SwitchNodeViewModel n => MatchBool(n.ConditionPin, vm),
+        _                     => null
+    };
+
+    private static InputPin<bool>? MatchBool(InputPin<bool> pin, PinViewModel vm)
         => pin.ViewModel == vm ? pin : null;
 }

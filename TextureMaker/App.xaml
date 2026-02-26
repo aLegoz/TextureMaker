@@ -178,6 +178,31 @@
             </DrawingGroup></DrawingImage.Drawing>
         </DrawingImage>
 
+        <!-- Toggle: circle inside rounded rect (on/off switch) -->
+        <DrawingImage x:Key="Icon.Toggle">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4A4A5A"><GeometryDrawing.Geometry><RectangleGeometry Rect="2,10,28,12" RadiusX="6" RadiusY="6"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#888" Thickness="1.5"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#B464D2"><GeometryDrawing.Geometry><EllipseGeometry Center="22,16" RadiusX="7" RadiusY="7"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#8030A0" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#D090F0"><GeometryDrawing.Geometry><EllipseGeometry Center="20,14" RadiusX="2.5" RadiusY="2.5"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Switch: line splits into two paths -->
+        <DrawingImage x:Key="Icon.Switch">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#B464D2" Geometry="M4,16 L14,16">
+                    <GeometryDrawing.Pen><Pen Brush="#B464D2" Thickness="2.5"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Geometry="M14,16 L20,8 L28,8">
+                    <GeometryDrawing.Pen><Pen Brush="#50C864" Thickness="2.5"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Geometry="M14,16 L20,24 L28,24">
+                    <GeometryDrawing.Pen><Pen Brush="#C05050" Thickness="2.5"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#50C864"><GeometryDrawing.Geometry><EllipseGeometry Center="28,8" RadiusX="3" RadiusY="3"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#C05050"><GeometryDrawing.Geometry><EllipseGeometry Center="28,24" RadiusX="3" RadiusY="3"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
         <!-- Save Texture: floppy disk -->
         <DrawingImage x:Key="Icon.SaveTexture">
             <DrawingImage.Drawing><DrawingGroup>
@@ -461,6 +486,9 @@
         <DataTemplate DataType="{x:Type nodes:NoiseNodeViewModel}">
             <nodeViews:NoiseNodeView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type nodes:ToggleNodeViewModel}">
+            <nodeViews:ToggleNodeView/>
+        </DataTemplate>
 
         <!-- Filter nodes -->
         <DataTemplate DataType="{x:Type filters:BlurNodeViewModel}">
@@ -493,6 +521,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type special:LevelsNodeViewModel}">
             <nodeViews:LevelsNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type special:SwitchNodeViewModel}">
+            <nodeViews:SwitchNodeView/>
         </DataTemplate>
 
         <!-- Output nodes -->
