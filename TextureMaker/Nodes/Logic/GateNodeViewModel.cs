@@ -4,12 +4,11 @@ using TextureMaker.Core;
 using TextureMaker.Graph;
 using TextureMaker.Nodes.Base;
 
-namespace TextureMaker.Nodes.Special;
+namespace TextureMaker.Nodes.Logic;
 
-public class SwitchNodeViewModel : TextureNodeViewModel
+public class GateNodeViewModel : TextureNodeViewModel
 {
-    public InputPin<TextureData> IfTrue      { get; } = new() { Name = "If True" };
-    public InputPin<TextureData> IfFalse     { get; } = new() { Name = "If False" };
+    public InputPin<TextureData> InputTexture { get; } = new() { Name = "Image" };
     public InputPin<bool>        ConditionPin { get; } = new() { Name = "Cond" };
 
     private bool _isActive;
@@ -19,26 +18,22 @@ public class SwitchNodeViewModel : TextureNodeViewModel
         set => this.RaiseAndSetIfChanged(ref _isActive, value);
     }
 
-    public SwitchNodeViewModel() : base("Switch")
+    public GateNodeViewModel() : base("Gate")
     {
-        // Register texture inputs
-        RegisterInput(IfTrue,  "If True");
-        RegisterInput(IfFalse, "If False");
+        RegisterInput(InputTexture, "Image");
 
-        // Register bool input manually
         ConditionPin.ViewModel.Name    = "Cond";
         ConditionPin.ViewModel.PinType = "bool";
         AllPins.Add(ConditionPin.ViewModel);
 
-        // Effective condition: use connected pin value when connected, otherwise fallback to IsActive
         var effectiveCondition = Observable.CombineLatest(
             ConditionPin.Value,
             this.WhenAnyValue(x => x.IsActive),
             (pinVal, manual) => ConditionPin.ViewModel.IsConnected ? pinVal : manual);
 
         Output.Value = Observable
-            .CombineLatest(IfTrue.Value, IfFalse.Value, effectiveCondition,
-                (t, f, c) => c == true ? t : f)
+            .CombineLatest(InputTexture.Value, effectiveCondition,
+                (tex, allow) => allow == true ? tex : null)
             .Throttle(TimeSpan.FromMilliseconds(50), RxApp.TaskpoolScheduler)
             .Select(Observable.Return)
             .Switch()

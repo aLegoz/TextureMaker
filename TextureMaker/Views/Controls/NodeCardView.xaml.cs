@@ -14,6 +14,7 @@ using TextureMaker.Nodes.Base;
 using TextureMaker.Nodes.Combine;
 using TextureMaker.Nodes.Filters;
 using TextureMaker.Nodes.Output;
+using TextureMaker.Nodes.Logic;
 using TextureMaker.Nodes.Sources;
 using TextureMaker.Nodes.Special;
 using WpfColor = System.Windows.Media.Color;
@@ -291,6 +292,7 @@ public partial class NodeCardView : UserControl
         InvertNodeViewModel n             => Match(n.InputTexture, vm),
         LevelsNodeViewModel n             => Match(n.InputTexture, vm),
         SaveNodeViewModel n               => Match(n.InputTexture, vm),
+        GateNodeViewModel n               => Match(n.InputTexture, vm),
         SwitchNodeViewModel n             => Match(n.IfTrue, vm) ?? Match(n.IfFalse, vm),
         _                                 => null
     };
@@ -347,6 +349,7 @@ public partial class NodeCardView : UserControl
 
     private static InputPin<bool>? FindBoolInputPin(GraphNodeViewModel node, PinViewModel vm) => node switch
     {
+        GateNodeViewModel n   => MatchBool(n.ConditionPin, vm),
         SwitchNodeViewModel n => MatchBool(n.ConditionPin, vm),
         _                     => null
     };

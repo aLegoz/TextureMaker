@@ -6,6 +6,7 @@
              xmlns:filters="clr-namespace:TextureMaker.Nodes.Filters"
              xmlns:combine="clr-namespace:TextureMaker.Nodes.Combine"
              xmlns:special="clr-namespace:TextureMaker.Nodes.Special"
+             xmlns:logic="clr-namespace:TextureMaker.Nodes.Logic"
              xmlns:output="clr-namespace:TextureMaker.Nodes.Output"
              xmlns:nodeViews="clr-namespace:TextureMaker.Views.Nodes"
              StartupUri="MainWindow.xaml">
@@ -200,6 +201,18 @@
                     <GeometryDrawing.Pen><Pen Brush="#C05050" Thickness="2.5"/></GeometryDrawing.Pen></GeometryDrawing>
                 <GeometryDrawing Brush="#50C864"><GeometryDrawing.Geometry><EllipseGeometry Center="28,8" RadiusX="3" RadiusY="3"/></GeometryDrawing.Geometry></GeometryDrawing>
                 <GeometryDrawing Brush="#C05050"><GeometryDrawing.Geometry><EllipseGeometry Center="28,24" RadiusX="3" RadiusY="3"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- Gate: shield with vertical line -->
+        <DrawingImage x:Key="Icon.Gate">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4A4A5A" Geometry="M16,2 L28,7 L28,18 Q28,28 16,30 Q4,28 4,18 L4,7 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#B464D2" Thickness="2"/></GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Geometry="M16,8 L16,22">
+                    <GeometryDrawing.Pen><Pen Brush="#B464D2" Thickness="2.5"/></GeometryDrawing.Pen>
+                </GeometryDrawing>
             </DrawingGroup></DrawingImage.Drawing>
         </DrawingImage>
 
@@ -486,8 +499,15 @@
         <DataTemplate DataType="{x:Type nodes:NoiseNodeViewModel}">
             <nodeViews:NoiseNodeView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type nodes:ToggleNodeViewModel}">
+        <!-- Logic nodes -->
+        <DataTemplate DataType="{x:Type logic:ToggleNodeViewModel}">
             <nodeViews:ToggleNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type logic:SwitchNodeViewModel}">
+            <nodeViews:SwitchNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type logic:GateNodeViewModel}">
+            <nodeViews:GateNodeView/>
         </DataTemplate>
 
         <!-- Filter nodes -->
@@ -522,10 +542,6 @@
         <DataTemplate DataType="{x:Type special:LevelsNodeViewModel}">
             <nodeViews:LevelsNodeView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type special:SwitchNodeViewModel}">
-            <nodeViews:SwitchNodeView/>
-        </DataTemplate>
-
         <!-- Output nodes -->
         <DataTemplate DataType="{x:Type output:SaveNodeViewModel}">
             <nodeViews:SaveNodeView/>

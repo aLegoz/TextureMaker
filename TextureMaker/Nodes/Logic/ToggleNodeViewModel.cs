@@ -1,7 +1,7 @@
 using ReactiveUI;
 using TextureMaker.Graph;
 
-namespace TextureMaker.Nodes.Sources;
+namespace TextureMaker.Nodes.Logic;
 
 public class ToggleNodeViewModel : GraphNodeViewModel
 {

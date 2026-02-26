@@ -1,6 +1,7 @@
 using TextureMaker.Graph;
 using TextureMaker.Nodes.Combine;
 using TextureMaker.Nodes.Filters;
+using TextureMaker.Nodes.Logic;
 using TextureMaker.Nodes.Output;
 using TextureMaker.Nodes.Sources;
 using TextureMaker.Nodes.Special;
@@ -18,6 +19,7 @@ public static class NodeFactory
         "Gradient"           => new GradientNodeViewModel(),
         "Noise"              => new NoiseNodeViewModel(),
         "Toggle"             => new ToggleNodeViewModel(),
+        "Gate"               => new GateNodeViewModel(),
         "Blur"               => new BlurNodeViewModel(),
         "Sharpen"            => new SharpenNodeViewModel(),
         "BrightnessContrast" => new BrightnessContrastNodeViewModel(),

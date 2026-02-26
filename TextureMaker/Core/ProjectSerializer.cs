@@ -5,6 +5,7 @@ using TextureMaker.Graph;
 using TextureMaker.Nodes.Base;
 using TextureMaker.Nodes.Combine;
 using TextureMaker.Nodes.Filters;
+using TextureMaker.Nodes.Logic;
 using TextureMaker.Nodes.Output;
 using TextureMaker.Nodes.Sources;
 using TextureMaker.Nodes.Special;
@@ -94,6 +95,7 @@ public static class ProjectSerializer
         GradientNodeViewModel           => "Gradient",
         NoiseNodeViewModel              => "Noise",
         ToggleNodeViewModel             => "Toggle",
+        GateNodeViewModel               => "Gate",
         BlurNodeViewModel               => "Blur",
         SharpenNodeViewModel            => "Sharpen",
         BrightnessContrastNodeViewModel => "BrightnessContrast",
@@ -121,6 +123,7 @@ public static class ProjectSerializer
             GradientNodeViewModel n           => new { colorA = ToHex(n.ColorA), colorB = ToHex(n.ColorB), direction = (int)n.Direction, width = n.Width, height = n.Height },
             NoiseNodeViewModel n              => new { scale = n.Scale, octaves = n.Octaves, seed = n.Seed, width = n.Width, height = n.Height },
             ToggleNodeViewModel n             => new { value = n.IsActive },
+            GateNodeViewModel n               => new { active = n.IsActive },
             BlurNodeViewModel n               => new { sigma = n.Sigma },
             SharpenNodeViewModel n            => new { amount = n.Amount, radius = n.Radius },
             BrightnessContrastNodeViewModel n => new { brightness = n.Brightness, contrast = n.Contrast },
@@ -202,6 +205,9 @@ public static class ProjectSerializer
             case ToggleNodeViewModel n:
                 n.IsActive = Bool(p, "value", false);
                 break;
+            case GateNodeViewModel n:
+                n.IsActive = Bool(p, "active", false);
+                break;
             case SwitchNodeViewModel n:
                 n.IsActive = Bool(p, "active", false);
                 break;
@@ -281,6 +287,7 @@ public static class ProjectSerializer
         NormalMapNodeViewModel x          => Chk(x.InputTexture, vm),
         InvertNodeViewModel x             => Chk(x.InputTexture, vm),
         LevelsNodeViewModel x             => Chk(x.InputTexture, vm),
+        GateNodeViewModel x               => Chk(x.InputTexture, vm),
         SwitchNodeViewModel x             => Chk(x.IfTrue, vm) ?? Chk(x.IfFalse, vm),
         SaveNodeViewModel x               => Chk(x.InputTexture, vm),
         _                                 => null
@@ -304,6 +311,7 @@ public static class ProjectSerializer
 
     private static InputPin<bool>? FindBoolPin(GraphNodeViewModel n, PinViewModel vm) => n switch
     {
+        GateNodeViewModel x   => ChkBool(x.ConditionPin, vm),
         SwitchNodeViewModel x => ChkBool(x.ConditionPin, vm),
         _                     => null
     };
