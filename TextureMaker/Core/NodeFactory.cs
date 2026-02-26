@@ -19,6 +19,8 @@ public static class NodeFactory
         "Gradient"           => new GradientNodeViewModel(),
         "Noise"              => new NoiseNodeViewModel(),
         "Toggle"             => new ToggleNodeViewModel(),
+        "And"                => new AndNodeViewModel(),
+        "Or"                 => new OrNodeViewModel(),
         "Gate"               => new GateNodeViewModel(),
         "Blur"               => new BlurNodeViewModel(),
         "Sharpen"            => new SharpenNodeViewModel(),

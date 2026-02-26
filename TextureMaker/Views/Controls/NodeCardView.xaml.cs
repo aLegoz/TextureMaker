@@ -336,12 +336,20 @@ public partial class NodeCardView : UserControl
         GraphNodeViewModel inNode,  PinViewModel inPinVm)
     {
         if (!outPinVm.IsOutput || inPinVm.IsOutput) return false;
-        if (outNode is not ToggleNodeViewModel tn) return false;
+
+        IObservable<bool>? boolObs = outNode switch
+        {
+            ToggleNodeViewModel n when n.BoolOutput.ViewModel == outPinVm => n.BoolOutput.Value,
+            AndNodeViewModel n    when n.BoolOutput.ViewModel == outPinVm => n.BoolOutput.Value,
+            OrNodeViewModel n     when n.BoolOutput.ViewModel == outPinVm => n.BoolOutput.Value,
+            _ => null
+        };
+        if (boolObs == null) return false;
 
         var inputPin = FindBoolInputPin(inNode, inPinVm);
         if (inputPin == null) return false;
 
-        var fakeOut = new OutputPin<bool> { Name = outPinVm.Name, Value = tn.BoolOutput.Value };
+        var fakeOut = new OutputPin<bool> { Name = outPinVm.Name, Value = boolObs };
         fakeOut.ViewModel.IsConnected = true;
         inputPin.Connect(fakeOut);
         return true;
@@ -351,6 +359,8 @@ public partial class NodeCardView : UserControl
     {
         GateNodeViewModel n   => MatchBool(n.ConditionPin, vm),
         SwitchNodeViewModel n => MatchBool(n.ConditionPin, vm),
+        AndNodeViewModel n    => MatchBool(n.InputA, vm) ?? MatchBool(n.InputB, vm),
+        OrNodeViewModel n     => MatchBool(n.InputA, vm) ?? MatchBool(n.InputB, vm),
         _                     => null
     };
 

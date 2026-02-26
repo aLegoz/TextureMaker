@@ -177,6 +177,18 @@
                                 <TextBlock Text="Gate" Grid.Row="1" VerticalAlignment="Center" FontSize="12" Foreground="#D4D4D4" TextAlignment="Center" TextWrapping="Wrap"/>
                             </Grid>
                         </Button>
+                        <Button Style="{StaticResource NodeBtn}" Tag="And" Click="AddNode_Click" ToolTip="AND (both inputs must be true)">
+                            <Grid Width="56"><Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="30"/></Grid.RowDefinitions>
+                                <Image Grid.Row="0" Width="26" Height="26" VerticalAlignment="Center" Source="{StaticResource Icon.And}"/>
+                                <TextBlock Text="AND" Grid.Row="1" VerticalAlignment="Center" FontSize="12" Foreground="#D4D4D4" TextAlignment="Center" TextWrapping="Wrap"/>
+                            </Grid>
+                        </Button>
+                        <Button Style="{StaticResource NodeBtn}" Tag="Or" Click="AddNode_Click" ToolTip="OR (any input true)">
+                            <Grid Width="56"><Grid.RowDefinitions><RowDefinition Height="28"/><RowDefinition Height="30"/></Grid.RowDefinitions>
+                                <Image Grid.Row="0" Width="26" Height="26" VerticalAlignment="Center" Source="{StaticResource Icon.Or}"/>
+                                <TextBlock Text="OR" Grid.Row="1" VerticalAlignment="Center" FontSize="12" Foreground="#D4D4D4" TextAlignment="Center" TextWrapping="Wrap"/>
+                            </Grid>
+                        </Button>
                     </StackPanel>
                     <TextBlock Text="LOGIC" FontSize="11" Foreground="#666" HorizontalAlignment="Center" Margin="0,3,0,0" FontWeight="SemiBold"/>
                 </StackPanel>

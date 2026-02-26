@@ -95,6 +95,8 @@ public static class ProjectSerializer
         GradientNodeViewModel           => "Gradient",
         NoiseNodeViewModel              => "Noise",
         ToggleNodeViewModel             => "Toggle",
+        AndNodeViewModel                => "And",
+        OrNodeViewModel                 => "Or",
         GateNodeViewModel               => "Gate",
         BlurNodeViewModel               => "Blur",
         SharpenNodeViewModel            => "Sharpen",
@@ -123,6 +125,8 @@ public static class ProjectSerializer
             GradientNodeViewModel n           => new { colorA = ToHex(n.ColorA), colorB = ToHex(n.ColorB), direction = (int)n.Direction, width = n.Width, height = n.Height },
             NoiseNodeViewModel n              => new { scale = n.Scale, octaves = n.Octaves, seed = n.Seed, width = n.Width, height = n.Height },
             ToggleNodeViewModel n             => new { value = n.IsActive },
+            AndNodeViewModel _               => (object)new { },
+            OrNodeViewModel _                => (object)new { },
             GateNodeViewModel n               => new { active = n.IsActive },
             BlurNodeViewModel n               => new { sigma = n.Sigma },
             SharpenNodeViewModel n            => new { amount = n.Amount, radius = n.Radius },
@@ -205,6 +209,9 @@ public static class ProjectSerializer
             case ToggleNodeViewModel n:
                 n.IsActive = Bool(p, "value", false);
                 break;
+            case AndNodeViewModel:
+            case OrNodeViewModel:
+                break;
             case GateNodeViewModel n:
                 n.IsActive = Bool(p, "active", false);
                 break;
@@ -269,6 +276,26 @@ public static class ProjectSerializer
                 connected = true;
             }
         }
+        else if (outNode is AndNodeViewModel an)
+        {
+            var pin = FindBoolPin(inNode, inPinVm);
+            if (pin != null)
+            {
+                var fake = new OutputPin<bool> { Name = outPinName, Value = an.BoolOutput.Value };
+                pin.Connect(fake);
+                connected = true;
+            }
+        }
+        else if (outNode is OrNodeViewModel on)
+        {
+            var pin = FindBoolPin(inNode, inPinVm);
+            if (pin != null)
+            {
+                var fake = new OutputPin<bool> { Name = outPinName, Value = on.BoolOutput.Value };
+                pin.Connect(fake);
+                connected = true;
+            }
+        }
 
         if (!connected) return null;
 
@@ -313,6 +340,8 @@ public static class ProjectSerializer
     {
         GateNodeViewModel x   => ChkBool(x.ConditionPin, vm),
         SwitchNodeViewModel x => ChkBool(x.ConditionPin, vm),
+        AndNodeViewModel x    => ChkBool(x.InputA, vm) ?? ChkBool(x.InputB, vm),
+        OrNodeViewModel x     => ChkBool(x.InputA, vm) ?? ChkBool(x.InputB, vm),
         _                     => null
     };
 

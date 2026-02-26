@@ -216,6 +216,27 @@
             </DrawingGroup></DrawingImage.Drawing>
         </DrawingImage>
 
+        <!-- AND: two overlapping circles, intersection purple -->
+        <DrawingImage x:Key="Icon.And">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4A4A5A"><GeometryDrawing.Geometry><EllipseGeometry Center="11,16" RadiusX="9" RadiusY="9"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#888" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#4A4A5A"><GeometryDrawing.Geometry><EllipseGeometry Center="21,16" RadiusX="9" RadiusY="9"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#888" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#B464D2"><GeometryDrawing.Geometry><EllipseGeometry Center="16,16" RadiusX="4" RadiusY="8"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
+        <!-- OR: both circles purple -->
+        <DrawingImage x:Key="Icon.Or">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#B464D2"><GeometryDrawing.Geometry><EllipseGeometry Center="11,16" RadiusX="9" RadiusY="9"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#8030A0" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+                <GeometryDrawing Brush="#B464D2"><GeometryDrawing.Geometry><EllipseGeometry Center="21,16" RadiusX="9" RadiusY="9"/></GeometryDrawing.Geometry>
+                    <GeometryDrawing.Pen><Pen Brush="#8030A0" Thickness="1"/></GeometryDrawing.Pen></GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
         <!-- Save Texture: floppy disk -->
         <DrawingImage x:Key="Icon.SaveTexture">
             <DrawingImage.Drawing><DrawingGroup>
@@ -502,6 +523,12 @@
         <!-- Logic nodes -->
         <DataTemplate DataType="{x:Type logic:ToggleNodeViewModel}">
             <nodeViews:ToggleNodeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type logic:AndNodeViewModel}">
+            <StackPanel/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type logic:OrNodeViewModel}">
+            <StackPanel/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type logic:SwitchNodeViewModel}">
             <nodeViews:SwitchNodeView/>

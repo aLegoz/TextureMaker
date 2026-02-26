@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -147,11 +148,33 @@ public partial class MainWindow : Window
     {
         _graph.Nodes.CollectionChanged       += OnGraphChanged;
         _graph.Connections.CollectionChanged += OnGraphChanged;
+        _graph.Nodes.CollectionChanged       += OnNodesCollectionForPropertySub;
+        foreach (var node in _graph.Nodes)
+            SubscribeNodePropertyChanged(node);
     }
 
     private void OnGraphChanged(object? sender,
         System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         => _isDirty = true;
+
+    private void OnNodesCollectionForPropertySub(object? sender,
+        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems == null) return;
+        foreach (GraphNodeViewModel node in e.NewItems)
+            SubscribeNodePropertyChanged(node);
+    }
+
+    private void SubscribeNodePropertyChanged(GraphNodeViewModel node)
+        => node.PropertyChanged += OnNodePropertyChanged;
+
+    private void OnNodePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(GraphNodeViewModel.IsSelected)
+                           or nameof(GraphNodeViewModel.HasError))
+            return;
+        _isDirty = true;
+    }
 
     /// <summary>
     /// Prompts to save if there are unsaved changes.
