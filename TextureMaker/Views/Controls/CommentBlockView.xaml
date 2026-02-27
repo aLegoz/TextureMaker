@@ -26,27 +26,28 @@
                         <ColumnDefinition Width="24"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Edit / Preview toggle (left) -->
-                    <Button Grid.Column="0"
-                            Click="EditToggle_Click"
-                            Cursor="Hand" Padding="0"
-                            ToolTip="Toggle preview">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border x:Name="Bd" Background="Transparent" CornerRadius="5,0,0,0">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
+                    <!-- Edit/Preview toggle — Border, not Button,
+                         so it handles its own e.Handled without
+                         competing with HeaderBorder for mouse capture -->
+                    <Border Grid.Column="0" x:Name="EditToggleBorder"
+                            CornerRadius="5,0,0,0"
+                            Cursor="Hand" ToolTip="Toggle preview"
+                            MouseLeftButtonDown="EditToggle_MouseDown">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#30FFFFFF"/>
+                                        <Setter Property="Background" Value="#30FFFFFF"/>
                                     </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                         <TextBlock x:Name="EditToggleIcon"
-                                   Text="&#x25B6;" FontSize="9" Foreground="#CCC"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
+                                   Text="&#x2713;" FontSize="13" Foreground="#4CAF50"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   IsHitTestVisible="False"/>
+                    </Border>
 
                     <!-- Title -->
                     <TextBox Grid.Column="1" x:Name="TitleBox"
@@ -56,8 +57,8 @@
                              Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                              Cursor="IBeam"/>
 
-                    <!-- Delete (fixed width column, icon in template) -->
-                    <Button Grid.Column="2"
+                    <!-- Delete — hardcoded icon in template so hover foreground works -->
+                    <Button Grid.Column="2" x:Name="DeleteBtn"
                             Click="Delete_Click"
                             Cursor="Hand" Padding="0"
                             ToolTip="Delete">
@@ -80,7 +81,7 @@
                 </Grid>
             </Border>
 
-            <!-- ── Color palette (visible in edit mode only) ──────────── -->
+            <!-- ── Color palette (edit mode only) ─────────────────────── -->
             <Border Grid.Row="1" x:Name="ColorRow"
                     Background="#18181C" Padding="6,4"
                     Visibility="Visible">

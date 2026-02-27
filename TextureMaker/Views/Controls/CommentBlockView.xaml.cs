@@ -37,11 +37,10 @@ public partial class CommentBlockView : UserControl
         Width  = vm.Width;
         Height = vm.Height;
 
-        // Allow dragging the entire block in preview mode (even over handled events)
-        RootBorder.AddHandler(
-            UIElement.MouseLeftButtonDownEvent,
-            new MouseButtonEventHandler(RootBorder_MouseDown),
-            handledEventsToo: true);
+        // In preview mode clicking the body (ScrollViewer) should drag the block,
+        // since there is nothing to edit there. We use the non-captured bubbling path
+        // (no handledEventsToo) so the scroll bar still works on its own track.
+        BodyPreview.MouseLeftButtonDown += BodyPreview_MouseDown;
 
         BuildColorPalette();
         ApplyHeaderColor(vm.HeaderColor);
@@ -105,6 +104,43 @@ public partial class CommentBlockView : UserControl
                 (byte)(c.B * 0.3)));
     }
 
+    // ── Mode toggle ───────────────────────────────────────────────────
+
+    private void EditToggle_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left) return;
+        e.Handled = true;   // stop event here — do NOT bubble to Header_MouseDown
+        _isPreview = !_isPreview;
+        ApplyMode();
+    }
+
+    public void SetPreviewMode(bool preview)
+    {
+        _isPreview = preview;
+        ApplyMode();
+    }
+
+    public void ApplyMode()
+    {
+        if (_isPreview)
+        {
+            MdViewer.Markdown      = _vm.Body;
+            BodyEdit.Visibility    = Visibility.Collapsed;
+            BodyPreview.Visibility = Visibility.Visible;
+            ColorRow.Visibility    = Visibility.Collapsed;
+            EditToggleIcon.Text       = "\u270F";                               // pencil
+            EditToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(0xAA, 0xAA, 0xAA));
+        }
+        else
+        {
+            BodyEdit.Visibility    = Visibility.Visible;
+            BodyPreview.Visibility = Visibility.Collapsed;
+            ColorRow.Visibility    = Visibility.Visible;
+            EditToggleIcon.Text       = "\u2713";                               // checkmark
+            EditToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
+        }
+    }
+
     // ── Drag ──────────────────────────────────────────────────────────
 
     private void Header_MouseDown(object sender, MouseButtonEventArgs e)
@@ -114,12 +150,12 @@ public partial class CommentBlockView : UserControl
         StartDrag(e);
     }
 
-    // In preview mode we also allow dragging by clicking anywhere on the block
-    private void RootBorder_MouseDown(object sender, MouseButtonEventArgs e)
+    // Allow dragging via the body area when in preview mode.
+    // Using normal (non-handledEventsToo) subscription so the scroll bar
+    // on its track still works (ScrollViewer marks those events handled).
+    private void BodyPreview_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (!_isPreview) return;
         if (e.ChangedButton != MouseButton.Left) return;
-        if (HeaderBorder.IsMouseCaptured) return; // header drag already active
         e.Handled = true;
         StartDrag(e);
     }
@@ -153,38 +189,6 @@ public partial class CommentBlockView : UserControl
         HeaderBorder.MouseMove         += OnMove;
         HeaderBorder.MouseLeftButtonUp += OnUp;
         HeaderBorder.CaptureMouse();
-    }
-
-    private void EditToggle_Click(object sender, RoutedEventArgs e)
-    {
-        e.Handled = true;
-        _isPreview = !_isPreview;
-        ApplyMode();
-    }
-
-    public void SetPreviewMode(bool preview)
-    {
-        _isPreview = preview;
-        ApplyMode();
-    }
-
-    public void ApplyMode()
-    {
-        if (_isPreview)
-        {
-            MdViewer.Markdown      = _vm.Body;
-            BodyEdit.Visibility    = Visibility.Collapsed;
-            BodyPreview.Visibility = Visibility.Visible;
-            ColorRow.Visibility    = Visibility.Collapsed;
-            EditToggleIcon.Text    = "\u270F"; // pencil → back to edit
-        }
-        else
-        {
-            BodyEdit.Visibility    = Visibility.Visible;
-            BodyPreview.Visibility = Visibility.Collapsed;
-            ColorRow.Visibility    = Visibility.Visible;
-            EditToggleIcon.Text    = "\u25B6"; // triangle → show preview
-        }
     }
 
     private void Delete_Click(object sender, RoutedEventArgs e)
