@@ -104,19 +104,22 @@
                     Padding="16,10">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 
-                    <!-- Cancel -->
-                    <Button x:Name="BtnCancel" Content="Cancel"
-                            Width="72" Margin="0,0,6,0"
-                            Click="Cancel_Click">
+                    <!-- Save (accent, primary action) -->
+                    <Button x:Name="BtnSave" Width="72" Margin="0,0,6,0"
+                            Click="Save_Click">
+                        <TextBlock Text="Save" Foreground="#000000"
+                                   FontSize="12" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"/>
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#3C3C3C"/>
-                                <Setter Property="Foreground" Value="#D4D4D4"/>
-                                <Setter Property="BorderBrush" Value="#555"/>
+                                <Setter Property="Background" Value="#FF8C00"/>
+                                <Setter Property="Foreground" Value="#000000"/>
+                                <Setter Property="BorderBrush" Value="#CC7000"/>
                                 <Setter Property="BorderThickness" Value="1"/>
                                 <Setter Property="Padding" Value="0,6"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
@@ -126,15 +129,15 @@
                                                     BorderThickness="{TemplateBinding BorderThickness}"
                                                     CornerRadius="4">
                                                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                                  Margin="{TemplateBinding Padding}"/>
+                                                                  Margin="{TemplateBinding Padding}"
+                                                                  TextElement.Foreground="{TemplateBinding Foreground}"/>
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="#505050"/>
-                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="#777"/>
+                                                    <Setter TargetName="Bd" Property="Background" Value="#FFA030"/>
                                                 </Trigger>
                                                 <Trigger Property="IsPressed" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="#252525"/>
+                                                    <Setter TargetName="Bd" Property="Background" Value="#CC7000"/>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -144,9 +147,9 @@
                         </Button.Style>
                     </Button>
 
-                    <!-- Discard -->
-                    <Button x:Name="BtnDiscard" Content="Discard"
-                            Width="72" Margin="0,0,6,0"
+                    <!-- Don't Save -->
+                    <Button x:Name="BtnDiscard" Content="Don't Save"
+                            Width="82" Margin="0,0,6,0"
                             Click="Discard_Click">
                         <Button.Style>
                             <Style TargetType="Button">
@@ -184,20 +187,19 @@
                         </Button.Style>
                     </Button>
 
-                    <!-- Save (accent) -->
-                    <Button x:Name="BtnSave" Content="Save"
+                    <!-- Cancel -->
+                    <Button x:Name="BtnCancel" Content="Cancel"
                             Width="72"
-                            Click="Save_Click">
+                            Click="Cancel_Click">
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter Property="Background" Value="#FF8C00"/>
-                                <Setter Property="Foreground" Value="#111"/>
-                                <Setter Property="BorderBrush" Value="#CC7000"/>
+                                <Setter Property="Background" Value="#3C3C3C"/>
+                                <Setter Property="Foreground" Value="#D4D4D4"/>
+                                <Setter Property="BorderBrush" Value="#555"/>
                                 <Setter Property="BorderThickness" Value="1"/>
                                 <Setter Property="Padding" Value="0,6"/>
                                 <Setter Property="Cursor" Value="Hand"/>
                                 <Setter Property="FontSize" Value="12"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="Template">
                                     <Setter.Value>
                                         <ControlTemplate TargetType="Button">
@@ -211,10 +213,11 @@
                                             </Border>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="#FFA030"/>
+                                                    <Setter TargetName="Bd" Property="Background" Value="#505050"/>
+                                                    <Setter TargetName="Bd" Property="BorderBrush" Value="#777"/>
                                                 </Trigger>
                                                 <Trigger Property="IsPressed" Value="True">
-                                                    <Setter TargetName="Bd" Property="Background" Value="#CC7000"/>
+                                                    <Setter TargetName="Bd" Property="Background" Value="#252525"/>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
