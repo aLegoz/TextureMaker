@@ -4,6 +4,9 @@
              Background="#2B2B2B"
              ClipToBounds="True">
     <Grid x:Name="RootGrid">
+        <!-- Comments layer (behind everything) -->
+        <Canvas Name="CommentCanvas"/>
+
         <!-- Connections layer (drawn first, behind nodes) -->
         <Canvas Name="ConnectionCanvas" IsHitTestVisible="False"/>
 

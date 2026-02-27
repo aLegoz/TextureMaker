@@ -16,6 +16,7 @@ public partial class GraphCanvas : UserControl
     private GraphViewModel? _graph;
     private readonly Dictionary<GraphNodeViewModel, NodeCardView> _nodeViews = new();
     private readonly Dictionary<ConnectionViewModel, Path> _connectionPaths = new();
+    private readonly Dictionary<CommentBlockViewModel, CommentBlockView> _commentViews = new();
 
     // Connection drag state
     private PinViewModel? _dragSourcePin;
@@ -107,6 +108,7 @@ public partial class GraphCanvas : UserControl
         {
             _graph.Nodes.CollectionChanged -= Nodes_Changed;
             _graph.Connections.CollectionChanged -= Connections_Changed;
+            _graph.Comments.CollectionChanged -= Comments_Changed;
         }
 
         _graph = graph;
@@ -115,14 +117,22 @@ public partial class GraphCanvas : UserControl
         _nodeViews.Clear();
         _connectionPaths.Clear();
 
+        // Clear and rebuild comment views
+        foreach (var cv in _commentViews.Values) CommentCanvas.Children.Remove(cv);
+        _commentViews.Clear();
+
         foreach (var node in graph.Nodes)
             AddNodeView(node);
 
         foreach (var conn in graph.Connections)
             AddConnectionPath(conn);
 
+        foreach (var comment in graph.Comments)
+            AddCommentView(comment);
+
         graph.Nodes.CollectionChanged += Nodes_Changed;
         graph.Connections.CollectionChanged += Connections_Changed;
+        graph.Comments.CollectionChanged += Comments_Changed;
 
         // Defer refresh until after layout pass so pin sockets are loaded
         Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, RefreshConnections);
@@ -372,6 +382,37 @@ public partial class GraphCanvas : UserControl
 
         _graph.RemoveNode(node);
         SelectionChanged?.Invoke(null);
+    }
+
+    // ── Comment block management ──────────────────────────────────────
+
+    private void Comments_Changed(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems != null)
+            foreach (CommentBlockViewModel c in e.NewItems) AddCommentView(c);
+        if (e.OldItems != null)
+            foreach (CommentBlockViewModel c in e.OldItems) RemoveCommentView(c);
+    }
+
+    private void AddCommentView(CommentBlockViewModel vm)
+    {
+        var view = new CommentBlockView(vm);
+        view.DeleteRequested += c => _graph?.Comments.Remove(c);
+        view.Width  = vm.Width;
+        view.Height = vm.Height;
+        Canvas.SetLeft(view, vm.Position.X);
+        Canvas.SetTop(view,  vm.Position.Y);
+        CommentCanvas.Children.Add(view);
+        _commentViews[vm] = view;
+    }
+
+    private void RemoveCommentView(CommentBlockViewModel vm)
+    {
+        if (_commentViews.TryGetValue(vm, out var view))
+        {
+            CommentCanvas.Children.Remove(view);
+            _commentViews.Remove(vm);
+        }
     }
 
     // ── Bezier helper ─────────────────────────────────────────────────

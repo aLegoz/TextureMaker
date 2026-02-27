@@ -7,6 +7,7 @@ public class GraphViewModel : ReactiveObject
 {
     public ObservableCollection<GraphNodeViewModel> Nodes { get; } = new();
     public ObservableCollection<ConnectionViewModel> Connections { get; } = new();
+    public ObservableCollection<CommentBlockViewModel> Comments { get; } = new();
 
     private GraphNodeViewModel? _selectedNode;
     public GraphNodeViewModel? SelectedNode

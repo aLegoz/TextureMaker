@@ -17,7 +17,8 @@ public static class ProjectSerializer
 {
     private record NodeEntry(int Id, string Type, double X, double Y, JsonElement Props);
     private record ConnectionEntry(int OutNodeId, string OutPinName, int InNodeId, string InPinName);
-    private record ProjectFile(List<NodeEntry> Nodes, List<ConnectionEntry> Connections);
+    private record CommentEntry(double X, double Y, double W, double H, string Title, string Body, string Color);
+    private record ProjectFile(List<NodeEntry> Nodes, List<ConnectionEntry> Connections, List<CommentEntry>? Comments = null);
 
     private static readonly JsonSerializerOptions s_opts = new()
     {
@@ -50,7 +51,13 @@ public static class ProjectSerializer
             connections.Add(new ConnectionEntry(outId, conn.OutputPin.Name, inId, conn.InputPin.Name));
         }
 
-        File.WriteAllText(path, JsonSerializer.Serialize(new ProjectFile(nodes, connections), s_opts));
+        var comments = graph.Comments.Select(c => new CommentEntry(
+            c.Position.X, c.Position.Y, c.Width, c.Height,
+            c.Title, c.Body,
+            ToHex(c.HeaderColor)
+        )).ToList();
+
+        File.WriteAllText(path, JsonSerializer.Serialize(new ProjectFile(nodes, connections, comments), s_opts));
     }
 
     // ── Load ──────────────────────────────────────────────────────────
@@ -79,6 +86,23 @@ public static class ProjectSerializer
             if (outNode == null || inNode == null) continue;
             var connVm = ConnectPins(outNode, conn.OutPinName, inNode, conn.InPinName);
             if (connVm != null) graph.Connections.Add(connVm);
+        }
+
+        if (project.Comments != null)
+        {
+            foreach (var ce in project.Comments)
+            {
+                var c = new CommentBlockViewModel
+                {
+                    Position    = new Point(ce.X, ce.Y),
+                    Width       = ce.W,
+                    Height      = ce.H,
+                    Title       = ce.Title,
+                    Body        = ce.Body,
+                    HeaderColor = FromHex(ce.Color)
+                };
+                graph.Comments.Add(c);
+            }
         }
 
         return graph;

@@ -248,6 +248,18 @@
             </DrawingGroup></DrawingImage.Drawing>
         </DrawingImage>
 
+        <!-- Comment: speech bubble / note -->
+        <DrawingImage x:Key="Icon.Comment">
+            <DrawingImage.Drawing><DrawingGroup>
+                <GeometryDrawing Brush="#4A5A6A" Geometry="M2,4 Q2,2 4,2 L28,2 Q30,2 30,4 L30,22 Q30,24 28,24 L10,24 L4,30 L4,24 Q2,24 2,22 Z">
+                    <GeometryDrawing.Pen><Pen Brush="#6A8AAA" Thickness="1.5"/></GeometryDrawing.Pen>
+                </GeometryDrawing>
+                <GeometryDrawing Brush="#AAC4D8" Geometry="M6,8 L26,8 M6,13 L22,13 M6,18 L18,18">
+                    <GeometryDrawing.Pen><Pen Brush="#AAC4D8" Thickness="1.5"/></GeometryDrawing.Pen>
+                </GeometryDrawing>
+            </DrawingGroup></DrawingImage.Drawing>
+        </DrawingImage>
+
         <!-- ── Converters ────────────────────────────────────────────── -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 

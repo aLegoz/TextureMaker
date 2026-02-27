@@ -143,6 +143,17 @@ public partial class MainWindow : Window
         StatusText.Text = $"Added: {node.Name}";
     }
 
+    private void AddComment_Click(object sender, RoutedEventArgs e)
+    {
+        var comment = new CommentBlockViewModel
+        {
+            Position = new System.Windows.Point((_nodeCount % 4) * 230 + 30, (_nodeCount / 4) * 200 + 30)
+        };
+        _graph.Comments.Add(comment);
+        _isDirty = true;
+        StatusText.Text = "Added: Comment";
+    }
+
     // ── Dirty tracking ────────────────────────────────────────────────
 
     private void SubscribeGraphDirty()
