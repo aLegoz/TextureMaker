@@ -391,6 +391,11 @@ public partial class GraphCanvas : UserControl
 
     private void Comments_Changed(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (e.Action == NotifyCollectionChangedAction.Reset)
+        {
+            foreach (var c in _commentViews.Keys.ToList()) RemoveCommentView(c);
+            return;
+        }
         if (e.NewItems != null)
             foreach (CommentBlockViewModel c in e.NewItems) AddCommentView(c);
         if (e.OldItems != null)
