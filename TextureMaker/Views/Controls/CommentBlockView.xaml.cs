@@ -214,11 +214,37 @@ public partial class CommentBlockView : UserControl
         if (dlg.Confirmed) DeleteRequested?.Invoke(_vm);
     }
 
+    // Bottom-right corner: both axes
     private void Resize_DragDelta(object sender, DragDeltaEventArgs e)
     {
         double newW = Math.Max(180, Width  + e.HorizontalChange);
         double newH = Math.Max(100, Height + e.VerticalChange);
         Width  = newW; _vm.Width  = newW;
+        Height = newH; _vm.Height = newH;
+    }
+
+    // Left edge: width grows/shrinks, position adjusts so right edge stays fixed
+    private void ResizeLeft_DragDelta(object sender, DragDeltaEventArgs e)
+    {
+        double newW  = Math.Max(180, Width - e.HorizontalChange);
+        double delta = Width - newW;            // actual change after clamping
+        Width = newW; _vm.Width = newW;
+        double newLeft = Canvas.GetLeft(this) + delta;
+        Canvas.SetLeft(this, newLeft);
+        _vm.Position = new Point(newLeft, Canvas.GetTop(this));
+    }
+
+    // Right edge: width only
+    private void ResizeRight_DragDelta(object sender, DragDeltaEventArgs e)
+    {
+        double newW = Math.Max(180, Width + e.HorizontalChange);
+        Width = newW; _vm.Width = newW;
+    }
+
+    // Bottom edge: height only
+    private void ResizeBottom_DragDelta(object sender, DragDeltaEventArgs e)
+    {
+        double newH = Math.Max(100, Height + e.VerticalChange);
         Height = newH; _vm.Height = newH;
     }
 }
