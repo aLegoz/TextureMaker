@@ -37,10 +37,19 @@ public partial class CommentBlockView : UserControl
         Width  = vm.Width;
         Height = vm.Height;
 
-        // In preview mode clicking the body (ScrollViewer) should drag the block,
-        // since there is nothing to edit there. We use the non-captured bubbling path
-        // (no handledEventsToo) so the scroll bar still works on its own track.
+        // In preview mode clicking the body (ScrollViewer) should drag the block.
         BodyPreview.MouseLeftButtonDown += BodyPreview_MouseDown;
+
+        // Forward wheel events to the parent Canvas even when a child (TextBox /
+        // ScrollViewer) has already marked the event as handled, so GraphCanvas
+        // zoom/pan still works while the cursor is over a comment block.
+        AddHandler(UIElement.MouseWheelEvent, new MouseWheelEventHandler((_, e) =>
+        {
+            if (!e.Handled) return; // already bubbling normally — don't double-fire
+            if (VisualParent is UIElement parent)
+                parent.RaiseEvent(new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    { RoutedEvent = UIElement.MouseWheelEvent });
+        }), handledEventsToo: true);
 
         BuildColorPalette();
         ApplyHeaderColor(vm.HeaderColor);
@@ -128,6 +137,8 @@ public partial class CommentBlockView : UserControl
             BodyEdit.Visibility    = Visibility.Collapsed;
             BodyPreview.Visibility = Visibility.Visible;
             ColorRow.Visibility    = Visibility.Collapsed;
+            // Title not editable in preview — clicks fall through to HeaderBorder (drag)
+            TitleBox.IsHitTestVisible = false;
             EditToggleIcon.Text       = "\u270F";                               // pencil
             EditToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(0xAA, 0xAA, 0xAA));
         }
@@ -136,6 +147,7 @@ public partial class CommentBlockView : UserControl
             BodyEdit.Visibility    = Visibility.Visible;
             BodyPreview.Visibility = Visibility.Collapsed;
             ColorRow.Visibility    = Visibility.Visible;
+            TitleBox.IsHitTestVisible = true;
             EditToggleIcon.Text       = "\u2713";                               // checkmark
             EditToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
         }

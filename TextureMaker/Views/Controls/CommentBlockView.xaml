@@ -8,10 +8,10 @@
             MinWidth="180" MinHeight="100">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="14"/>
+                <RowDefinition Height="Auto"/>   <!-- 0: Header          -->
+                <RowDefinition Height="*"/>      <!-- 1: Body            -->
+                <RowDefinition Height="Auto"/>   <!-- 2: Color palette   -->
+                <RowDefinition Height="14"/>     <!-- 3: Resize thumb    -->
             </Grid.RowDefinitions>
 
             <!-- ── Header ─────────────────────────────────────────────── -->
@@ -26,9 +26,7 @@
                         <ColumnDefinition Width="24"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Edit/Preview toggle — Border, not Button,
-                         so it handles its own e.Handled without
-                         competing with HeaderBorder for mouse capture -->
+                    <!-- Edit/Preview toggle (Border avoids Button/Header capture conflict) -->
                     <Border Grid.Column="0" x:Name="EditToggleBorder"
                             CornerRadius="5,0,0,0"
                             Cursor="Hand" ToolTip="Toggle preview"
@@ -49,7 +47,7 @@
                                    IsHitTestVisible="False"/>
                     </Border>
 
-                    <!-- Title -->
+                    <!-- Title — IsHitTestVisible toggled by ApplyMode() -->
                     <TextBox Grid.Column="1" x:Name="TitleBox"
                              Background="Transparent" BorderThickness="0"
                              Foreground="#E8E8E8" FontSize="12" FontWeight="SemiBold"
@@ -57,7 +55,7 @@
                              Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                              Cursor="IBeam"/>
 
-                    <!-- Delete — hardcoded icon in template so hover foreground works -->
+                    <!-- Delete -->
                     <Button Grid.Column="2" x:Name="DeleteBtn"
                             Click="Delete_Click"
                             Cursor="Hand" Padding="0"
@@ -81,15 +79,8 @@
                 </Grid>
             </Border>
 
-            <!-- ── Color palette (edit mode only) ─────────────────────── -->
-            <Border Grid.Row="1" x:Name="ColorRow"
-                    Background="#18181C" Padding="6,4"
-                    Visibility="Visible">
-                <StackPanel x:Name="ColorPalette" Orientation="Horizontal"/>
-            </Border>
-
             <!-- ── Body: edit ─────────────────────────────────────────── -->
-            <TextBox Grid.Row="2" x:Name="BodyEdit"
+            <TextBox Grid.Row="1" x:Name="BodyEdit"
                      Background="#1E1E22" Foreground="#CCCCCC"
                      BorderThickness="0" Padding="10,8"
                      AcceptsReturn="True" AcceptsTab="True"
@@ -100,15 +91,25 @@
                      Visibility="Visible"/>
 
             <!-- ── Body: preview ──────────────────────────────────────── -->
-            <ScrollViewer Grid.Row="2" x:Name="BodyPreview"
+            <ScrollViewer Grid.Row="1" x:Name="BodyPreview"
                           Background="#1E1E22" Padding="10,8"
                           VerticalScrollBarVisibility="Auto"
                           Visibility="Collapsed">
+                <!-- IsHitTestVisible=False prevents text selection while keeping
+                     the scrollbar (part of ScrollViewer template) fully functional -->
                 <mdxaml:MarkdownScrollViewer x:Name="MdViewer"
                                               Background="Transparent"
                                               BorderThickness="0"
+                                              IsHitTestVisible="False"
                                               VerticalScrollBarVisibility="Disabled"/>
             </ScrollViewer>
+
+            <!-- ── Color palette — below body so it doesn't shift the body top ── -->
+            <Border Grid.Row="2" x:Name="ColorRow"
+                    Background="#18181C" Padding="6,4"
+                    Visibility="Visible">
+                <StackPanel x:Name="ColorPalette" Orientation="Horizontal"/>
+            </Border>
 
             <!-- ── Resize thumb ───────────────────────────────────────── -->
             <Thumb Grid.Row="3"
