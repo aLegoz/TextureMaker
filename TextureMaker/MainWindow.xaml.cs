@@ -11,6 +11,7 @@ using TextureMaker.Core;
 using TextureMaker.Graph;
 using TextureMaker.Nodes.Base;
 using TextureMaker.Nodes.Output;
+using TextureMaker.Views.Dialogs;
 using TextureMaker.Views.Nodes;
 
 namespace TextureMaker;
@@ -184,21 +185,17 @@ public partial class MainWindow : Window
     {
         if (!_isDirty) return true;
 
-        var result = MessageBox.Show(
-            "The project has unsaved changes.\nSave before continuing?",
-            "Unsaved Changes",
-            MessageBoxButton.YesNoCancel,
-            MessageBoxImage.Warning);
+        var dlg = new UnsavedChangesDialog(this);
+        dlg.ShowDialog();
 
-        if (result == MessageBoxResult.Cancel) return false;
-
-        if (result == MessageBoxResult.Yes)
+        if (dlg.Result == UnsavedResult.Cancel)  return false;
+        if (dlg.Result == UnsavedResult.Save)
         {
             SaveProject_Click(this, new RoutedEventArgs());
             return !_isDirty; // false if Save As was cancelled
         }
 
-        return true; // No — discard changes
+        return true; // Discard
     }
 
     // ── File menu handlers ────────────────────────────────────────────
