@@ -9,74 +9,98 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="14"/>
             </Grid.RowDefinitions>
 
-            <!-- Header -->
+            <!-- ── Header ─────────────────────────────────────────────── -->
             <Border Grid.Row="0" x:Name="HeaderBorder"
-                    CornerRadius="6,6,0,0" Padding="6,5"
+                    CornerRadius="6,6,0,0"
                     Cursor="SizeAll"
                     MouseLeftButtonDown="Header_MouseDown">
-                <DockPanel>
-                    <!-- Color swatch -->
-                    <Border x:Name="ColorSwatch"
-                            DockPanel.Dock="Left"
-                            Width="14" Height="14" CornerRadius="3"
-                            Margin="0,0,6,0" Cursor="Hand"
-                            MouseLeftButtonDown="ColorSwatch_Click"/>
+                <Grid Height="28">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="28"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Edit / Preview toggle (left) -->
+                    <Button Grid.Column="0"
+                            Click="EditToggle_Click"
+                            Cursor="Hand" Padding="0"
+                            ToolTip="Toggle preview">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="Transparent" CornerRadius="5,0,0,0">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#30FFFFFF"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <TextBlock x:Name="EditToggleIcon"
+                                   Text="&#x25B6;" FontSize="9" Foreground="#CCC"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
 
                     <!-- Title -->
-                    <TextBox x:Name="TitleBox"
-                             DockPanel.Dock="Left"
+                    <TextBox Grid.Column="1" x:Name="TitleBox"
                              Background="Transparent" BorderThickness="0"
                              Foreground="#E8E8E8" FontSize="12" FontWeight="SemiBold"
-                             VerticalAlignment="Center"
+                             VerticalAlignment="Center" Padding="4,0"
                              Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                              Cursor="IBeam"/>
 
-                    <!-- Preview toggle -->
-                    <Button DockPanel.Dock="Right"
-                            x:Name="PreviewBtn"
-                            Background="Transparent" BorderThickness="0"
-                            Foreground="#AAA" FontSize="11"
-                            Padding="4,0" Cursor="Hand"
-                            ToolTip="Toggle preview"
-                            Click="Preview_Click">
-                        <TextBlock Text="&#x2B1B;" Foreground="#AAA" FontSize="11"/>
+                    <!-- Delete (fixed width column, icon in template) -->
+                    <Button Grid.Column="2"
+                            Click="Delete_Click"
+                            Cursor="Hand" Padding="0"
+                            ToolTip="Delete">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="Transparent" CornerRadius="0,5,0,0">
+                                    <TextBlock x:Name="Ico"
+                                               Text="&#xD7;" Foreground="#888" FontSize="15"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="#C42B1C"/>
+                                        <Setter TargetName="Ico" Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
                     </Button>
-
-                    <!-- Delete -->
-                    <Button DockPanel.Dock="Right"
-                            Background="Transparent" BorderThickness="0"
-                            Foreground="#888" FontSize="14"
-                            Padding="4,0" Cursor="Hand"
-                            Click="Delete_Click">
-                        <TextBlock Text="&#xD7;" Foreground="#888" FontSize="15"/>
-                    </Button>
-                </DockPanel>
+                </Grid>
             </Border>
 
-            <!-- Body: edit mode -->
-            <TextBox Grid.Row="1"
-                     x:Name="BodyEdit"
-                     Background="#1E1E22"
-                     Foreground="#CCCCCC"
-                     BorderThickness="0"
-                     Padding="10,8"
-                     AcceptsReturn="True"
-                     AcceptsTab="True"
+            <!-- ── Color palette (visible in edit mode only) ──────────── -->
+            <Border Grid.Row="1" x:Name="ColorRow"
+                    Background="#18181C" Padding="6,4"
+                    Visibility="Visible">
+                <StackPanel x:Name="ColorPalette" Orientation="Horizontal"/>
+            </Border>
+
+            <!-- ── Body: edit ─────────────────────────────────────────── -->
+            <TextBox Grid.Row="2" x:Name="BodyEdit"
+                     Background="#1E1E22" Foreground="#CCCCCC"
+                     BorderThickness="0" Padding="10,8"
+                     AcceptsReturn="True" AcceptsTab="True"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Auto"
                      FontFamily="Consolas" FontSize="12"
                      Text="{Binding Body, UpdateSourceTrigger=PropertyChanged}"
                      Visibility="Visible"/>
 
-            <!-- Body: preview mode -->
-            <ScrollViewer Grid.Row="1"
-                          x:Name="BodyPreview"
-                          Background="#1E1E22"
-                          Padding="10,8"
+            <!-- ── Body: preview ──────────────────────────────────────── -->
+            <ScrollViewer Grid.Row="2" x:Name="BodyPreview"
+                          Background="#1E1E22" Padding="10,8"
                           VerticalScrollBarVisibility="Auto"
                           Visibility="Collapsed">
                 <mdxaml:MarkdownScrollViewer x:Name="MdViewer"
@@ -85,16 +109,16 @@
                                               VerticalScrollBarVisibility="Disabled"/>
             </ScrollViewer>
 
-            <!-- Resize thumb -->
-            <Thumb Grid.Row="2"
+            <!-- ── Resize thumb ───────────────────────────────────────── -->
+            <Thumb Grid.Row="3"
                    HorizontalAlignment="Right"
                    Width="14" Cursor="SizeNWSE"
                    DragDelta="Resize_DragDelta">
                 <Thumb.Template>
                     <ControlTemplate>
                         <Canvas Width="12" Height="12" Margin="0,1,1,0">
-                            <Line X1="2" Y1="12" X2="12" Y2="2" Stroke="#555" StrokeThickness="1.5"/>
-                            <Line X1="6" Y1="12" X2="12" Y2="6" Stroke="#555" StrokeThickness="1.5"/>
+                            <Line X1="2"  Y1="12" X2="12" Y2="2"  Stroke="#555" StrokeThickness="1.5"/>
+                            <Line X1="6"  Y1="12" X2="12" Y2="6"  Stroke="#555" StrokeThickness="1.5"/>
                             <Line X1="10" Y1="12" X2="12" Y2="10" Stroke="#555" StrokeThickness="1.5"/>
                         </Canvas>
                     </ControlTemplate>

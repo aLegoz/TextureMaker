@@ -217,6 +217,7 @@ public partial class MainWindow : Window
 
         _graph.Connections.Clear();
         _graph.Nodes.Clear();
+        _graph.Comments.Clear();
         FloatPreviewPanel.ClearPreview();
         _currentFilePath = null;
         _nodeCount = 0;

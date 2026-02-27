@@ -17,6 +17,7 @@ public partial class GraphCanvas : UserControl
     private readonly Dictionary<GraphNodeViewModel, NodeCardView> _nodeViews = new();
     private readonly Dictionary<ConnectionViewModel, Path> _connectionPaths = new();
     private readonly Dictionary<CommentBlockViewModel, CommentBlockView> _commentViews = new();
+    private bool _isLoading;
 
     // Connection drag state
     private PinViewModel? _dragSourcePin;
@@ -127,8 +128,10 @@ public partial class GraphCanvas : UserControl
         foreach (var conn in graph.Connections)
             AddConnectionPath(conn);
 
+        _isLoading = true;
         foreach (var comment in graph.Comments)
             AddCommentView(comment);
+        _isLoading = false;
 
         graph.Nodes.CollectionChanged += Nodes_Changed;
         graph.Connections.CollectionChanged += Connections_Changed;
@@ -404,6 +407,10 @@ public partial class GraphCanvas : UserControl
         Canvas.SetTop(view,  vm.Position.Y);
         CommentCanvas.Children.Add(view);
         _commentViews[vm] = view;
+
+        // Loaded comments with content start in preview (read) mode
+        if (_isLoading && !string.IsNullOrWhiteSpace(vm.Body))
+            view.SetPreviewMode(true);
     }
 
     private void RemoveCommentView(CommentBlockViewModel vm)

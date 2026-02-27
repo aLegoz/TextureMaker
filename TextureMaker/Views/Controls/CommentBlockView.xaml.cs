@@ -13,16 +13,18 @@ public partial class CommentBlockView : UserControl
 {
     private readonly CommentBlockViewModel _vm;
     private bool _isPreview;
+    private Border[] _colorBorders = null!;
 
-    // Preset header colors
     private static readonly WpfColor[] PresetColors =
     [
-        Color.FromRgb(50,  80, 110),   // blue
-        Color.FromRgb(60,  100, 60),   // green
-        Color.FromRgb(110, 60,  60),   // red
-        Color.FromRgb(100, 70,  30),   // amber
-        Color.FromRgb(70,  50,  110),  // purple
-        Color.FromRgb(50,  90,  90),   // teal
+        WpfColor.FromRgb(50,  80,  110),  // blue
+        WpfColor.FromRgb(60,  100, 60),   // green
+        WpfColor.FromRgb(110, 60,  60),   // red
+        WpfColor.FromRgb(100, 70,  30),   // amber
+        WpfColor.FromRgb(70,  50,  110),  // purple
+        WpfColor.FromRgb(50,  90,  90),   // teal
+        WpfColor.FromRgb(75,  75,  75),   // grey
+        WpfColor.FromRgb(90,  65,  50),   // brown
     ];
 
     public event Action<CommentBlockViewModel>? DeleteRequested;
@@ -32,47 +34,98 @@ public partial class CommentBlockView : UserControl
         InitializeComponent();
         _vm = vm;
         DataContext = vm;
-
-        // Set initial size
         Width  = vm.Width;
         Height = vm.Height;
 
-        // Sync header color
+        // Allow dragging the entire block in preview mode (even over handled events)
+        RootBorder.AddHandler(
+            UIElement.MouseLeftButtonDownEvent,
+            new MouseButtonEventHandler(RootBorder_MouseDown),
+            handledEventsToo: true);
+
+        BuildColorPalette();
         ApplyHeaderColor(vm.HeaderColor);
         vm.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(CommentBlockViewModel.HeaderColor))
+            {
                 ApplyHeaderColor(vm.HeaderColor);
+                UpdateColorSelection();
+            }
         };
 
-        // Sync markdown when body changes and in preview mode
         BodyEdit.TextChanged += (_, _) =>
         {
             if (_isPreview) MdViewer.Markdown = _vm.Body;
         };
     }
 
+    private void BuildColorPalette()
+    {
+        _colorBorders = new Border[PresetColors.Length];
+        for (int i = 0; i < PresetColors.Length; i++)
+        {
+            int idx = i;
+            var border = new Border
+            {
+                Width           = 16,
+                Height          = 16,
+                CornerRadius    = new CornerRadius(8),
+                Background      = new SolidColorBrush(PresetColors[i]),
+                BorderThickness = new Thickness(2),
+                Margin          = new Thickness(2, 0, 2, 0),
+                Cursor          = Cursors.Hand,
+            };
+            border.MouseLeftButtonDown += (_, e) =>
+            {
+                e.Handled = true;
+                _vm.HeaderColor = PresetColors[idx];
+            };
+            _colorBorders[i] = border;
+            ColorPalette.Children.Add(border);
+        }
+        UpdateColorSelection();
+    }
+
+    private void UpdateColorSelection()
+    {
+        for (int i = 0; i < PresetColors.Length; i++)
+            _colorBorders[i].BorderBrush = _vm.HeaderColor == PresetColors[i]
+                ? Brushes.White
+                : Brushes.Transparent;
+    }
+
     private void ApplyHeaderColor(WpfColor c)
     {
         HeaderBorder.Background = new SolidColorBrush(c);
-        ColorSwatch.Background  = new SolidColorBrush(
-            Color.FromRgb(
-                (byte)Math.Min(255, c.R + 40),
-                (byte)Math.Min(255, c.G + 40),
-                (byte)Math.Min(255, c.B + 40)));
-        RootBorder.Background = new SolidColorBrush(
-            Color.FromRgb(
+        RootBorder.Background   = new SolidColorBrush(
+            WpfColor.FromRgb(
                 (byte)(c.R * 0.3),
                 (byte)(c.G * 0.3),
                 (byte)(c.B * 0.3)));
     }
 
+    // ── Drag ──────────────────────────────────────────────────────────
+
     private void Header_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ClickCount == 2) return; // allow double-click in title box
+        if (e.ClickCount == 2) return;
         e.Handled = true;
-        // Drag is handled by GraphCanvas via Canvas position — raise a drag event
-        // We use a simple approach: capture and move via parent canvas
+        StartDrag(e);
+    }
+
+    // In preview mode we also allow dragging by clicking anywhere on the block
+    private void RootBorder_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (!_isPreview) return;
+        if (e.ChangedButton != MouseButton.Left) return;
+        if (HeaderBorder.IsMouseCaptured) return; // header drag already active
+        e.Handled = true;
+        StartDrag(e);
+    }
+
+    private void StartDrag(MouseButtonEventArgs e)
+    {
         if (VisualParent is not Canvas canvas) return;
 
         var startMouse = e.GetPosition(canvas);
@@ -93,38 +146,44 @@ public partial class CommentBlockView : UserControl
         {
             if (me.ChangedButton != MouseButton.Left) return;
             HeaderBorder.ReleaseMouseCapture();
-            HeaderBorder.MouseMove -= OnMove;
+            HeaderBorder.MouseMove         -= OnMove;
             HeaderBorder.MouseLeftButtonUp -= OnUp;
         }
 
-        HeaderBorder.MouseMove += OnMove;
+        HeaderBorder.MouseMove         += OnMove;
         HeaderBorder.MouseLeftButtonUp += OnUp;
         HeaderBorder.CaptureMouse();
     }
 
-    private void ColorSwatch_Click(object sender, MouseButtonEventArgs e)
+    private void EditToggle_Click(object sender, RoutedEventArgs e)
     {
         e.Handled = true;
-        // Cycle through preset colors
-        int idx = Array.IndexOf(PresetColors, _vm.HeaderColor);
-        _vm.HeaderColor = PresetColors[(idx + 1) % PresetColors.Length];
+        _isPreview = !_isPreview;
+        ApplyMode();
     }
 
-    private void Preview_Click(object sender, RoutedEventArgs e)
+    public void SetPreviewMode(bool preview)
     {
-        _isPreview = !_isPreview;
+        _isPreview = preview;
+        ApplyMode();
+    }
+
+    public void ApplyMode()
+    {
         if (_isPreview)
         {
-            MdViewer.Markdown = _vm.Body;
+            MdViewer.Markdown      = _vm.Body;
             BodyEdit.Visibility    = Visibility.Collapsed;
             BodyPreview.Visibility = Visibility.Visible;
-            ((TextBlock)((Button)sender).Content).Text = "\u270F";
+            ColorRow.Visibility    = Visibility.Collapsed;
+            EditToggleIcon.Text    = "\u270F"; // pencil → back to edit
         }
         else
         {
             BodyEdit.Visibility    = Visibility.Visible;
             BodyPreview.Visibility = Visibility.Collapsed;
-            ((TextBlock)((Button)sender).Content).Text = "\u2B1B";
+            ColorRow.Visibility    = Visibility.Visible;
+            EditToggleIcon.Text    = "\u25B6"; // triangle → show preview
         }
     }
 
@@ -143,9 +202,7 @@ public partial class CommentBlockView : UserControl
     {
         double newW = Math.Max(180, Width  + e.HorizontalChange);
         double newH = Math.Max(100, Height + e.VerticalChange);
-        Width  = newW;
-        Height = newH;
-        _vm.Width  = newW;
-        _vm.Height = newH;
+        Width  = newW; _vm.Width  = newW;
+        Height = newH; _vm.Height = newH;
     }
 }
