@@ -102,7 +102,14 @@
                                               Background="Transparent"
                                               BorderThickness="0"
                                               IsHitTestVisible="False"
-                                              VerticalScrollBarVisibility="Disabled"/>
+                                              VerticalScrollBarVisibility="Disabled">
+                    <mdxaml:MarkdownScrollViewer.MarkdownStyle>
+                        <Style TargetType="FlowDocument">
+                            <!-- Kill the default page padding so text starts flush with the TextBox above -->
+                            <Setter Property="PagePadding" Value="0"/>
+                        </Style>
+                    </mdxaml:MarkdownScrollViewer.MarkdownStyle>
+                </mdxaml:MarkdownScrollViewer>
             </ScrollViewer>
 
             <!-- ── Color palette — below body so it doesn't shift the body top ── -->

@@ -150,6 +150,8 @@ public partial class CommentBlockView : UserControl
             TitleBox.IsHitTestVisible = true;
             EditToggleIcon.Text       = "\u2713";                               // checkmark
             EditToggleIcon.Foreground = new SolidColorBrush(Color.FromRgb(0x4C, 0xAF, 0x50));
+            // Restore caret to top so the TextBox doesn't appear scrolled down
+            BodyEdit.ScrollToHome();
         }
     }
 
