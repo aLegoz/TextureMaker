@@ -87,6 +87,7 @@
                      AcceptsReturn="True" AcceptsTab="True"
                      TextWrapping="Wrap"
                      VerticalScrollBarVisibility="Auto"
+                     VerticalContentAlignment="Top"
                      FontFamily="Consolas" FontSize="12"
                      Text="{Binding Body, UpdateSourceTrigger=PropertyChanged}"
                      Visibility="Visible"/>
