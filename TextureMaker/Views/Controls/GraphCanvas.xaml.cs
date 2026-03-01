@@ -328,6 +328,9 @@ public partial class GraphCanvas : UserControl
         PinViewModel? inPin  = !src.IsOutput ? src : (!targetPin.IsOutput ? targetPin : null);
         if (outPin == null || inPin == null || outPin == inPin) return;
 
+        // Reject connections that would create a cycle (causes Rx stack overflow)
+        if (_graph!.WouldCreateCycle(outPin, inPin)) return;
+
         if (_dragSourceCard!.TryConnectDataPin(outPin, targetCard, inPin))
         {
             _graph!.Connect(outPin, inPin, () => { });
