@@ -1,6 +1,6 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -18,10 +18,8 @@ namespace TextureMaker;
 
 public partial class MainWindow : Window
 {
-    private GraphViewModel _graph = new();
-    private int _nodeCount = 0;
-    private string? _currentFilePath;
-    private bool _isDirty;
+    public ObservableCollection<ProjectTab> Tabs { get; } = new();
+    private ProjectTab _activeTab = null!;
     private IObservable<TextureData?>? _currentPreviewObs;
 
     // Float card drag state
@@ -35,13 +33,90 @@ public partial class MainWindow : Window
     {
         ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
         InitializeComponent();
-        NodeGraph.SetGraph(_graph);
+        TabStrip.ItemsSource = Tabs;
+
+        var first = new ProjectTab();
+        Tabs.Add(first);
+        SubscribeGraphDirty(first);
+        SwitchToTab(first);
+
         NodeGraph.SelectionChanged += OnSelectionChanged;
         FloatCanvas.SizeChanged    += FloatCanvas_SizeChanged;
         Loaded  += OnLoaded;
         Closing += OnClosing;
-        SubscribeGraphDirty();
     }
+
+    // ── Tab management ────────────────────────────────────────────────
+
+    private void SwitchToTab(ProjectTab newTab)
+    {
+        if (_activeTab != null)
+        {
+            _activeTab.IsActive = false;
+            var (s, px, py) = NodeGraph.GetViewTransform();
+            _activeTab.SavedScale = s;
+            _activeTab.SavedPanX  = px;
+            _activeTab.SavedPanY  = py;
+        }
+
+        _activeTab = newTab;
+        newTab.IsActive = true;
+
+        NodeGraph.SetGraph(newTab.Graph);
+        NodeGraph.SetViewTransform(newTab.SavedScale, newTab.SavedPanX, newTab.SavedPanY);
+        FloatPreviewPanel.ClearPreview();
+        UpdateTitle();
+        StatusText.Text = newTab.FilePath != null
+            ? $"Opened: {Path.GetFileName(newTab.FilePath)}"
+            : "New project";
+    }
+
+    private void CloseTab(ProjectTab tab)
+    {
+        if (tab.IsDirty)
+        {
+            SwitchToTab(tab);
+            if (!PromptSaveIfDirty()) return;
+        }
+
+        int idx = Tabs.IndexOf(tab);
+        Tabs.Remove(tab);
+
+        if (Tabs.Count == 0)
+        {
+            var empty = new ProjectTab();
+            Tabs.Add(empty);
+            SubscribeGraphDirty(empty);
+            SwitchToTab(empty);
+        }
+        else
+        {
+            SwitchToTab(Tabs[Math.Min(idx, Tabs.Count - 1)]);
+        }
+    }
+
+    private void Tab_Click(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is ProjectTab tab)
+            SwitchToTab(tab);
+    }
+
+    private void CloseTab_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.DataContext is ProjectTab tab)
+            CloseTab(tab);
+        e.Handled = true; // prevent Tab_Click from also firing
+    }
+
+    private void NewTab_Click(object sender, RoutedEventArgs e)
+    {
+        var tab = new ProjectTab();
+        Tabs.Add(tab);
+        SubscribeGraphDirty(tab);
+        SwitchToTab(tab);
+    }
+
+    // ── Lifecycle ─────────────────────────────────────────────────────
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
@@ -60,7 +135,6 @@ public partial class MainWindow : Window
         double left = Math.Clamp(s.PreviewLeft, 0, maxLeft);
         double top  = Math.Clamp(s.PreviewTop,  0, maxTop);
 
-        // Re-apply snap so card sits exactly at the edge
         if (_snapLeft)   left = 0;
         if (_snapRight)  left = maxLeft;
         if (_snapTop)    top  = 0;
@@ -70,12 +144,12 @@ public partial class MainWindow : Window
         Canvas.SetTop(FloatCard,  top);
     }
 
-    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    private void OnClosing(object? sender, CancelEventArgs e)
     {
-        if (!PromptSaveIfDirty())
+        foreach (var tab in Tabs.Where(t => t.IsDirty).ToList())
         {
-            e.Cancel = true;
-            return;
+            SwitchToTab(tab);
+            if (!PromptSaveIfDirty()) { e.Cancel = true; return; }
         }
 
         new AppSettings
@@ -104,7 +178,7 @@ public partial class MainWindow : Window
 
     private void MainWindow_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Delete && _graph.SelectedNode != null)
+        if (e.Key == Key.Delete && _activeTab.Graph.SelectedNode != null)
         {
             NodeGraph.DeleteSelectedNode();
             StatusText.Text = "Node deleted";
@@ -112,7 +186,7 @@ public partial class MainWindow : Window
         }
         else if (e.Key == Key.N && Keyboard.Modifiers == ModifierKeys.Control)
         {
-            NewProject_Click(this, new RoutedEventArgs());
+            NewTab_Click(this, new RoutedEventArgs());
             e.Handled = true;
         }
         else if (e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
@@ -125,7 +199,23 @@ public partial class MainWindow : Window
             SaveProject_Click(this, new RoutedEventArgs());
             e.Handled = true;
         }
+        else if (e.Key == Key.W && Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            CloseTab(_activeTab);
+            e.Handled = true;
+        }
+        else if (e.Key == Key.Tab && Keyboard.Modifiers == ModifierKeys.Control)
+        {
+            if (Tabs.Count > 1)
+            {
+                int idx = (Tabs.IndexOf(_activeTab) + 1) % Tabs.Count;
+                SwitchToTab(Tabs[idx]);
+            }
+            e.Handled = true;
+        }
     }
+
+    // ── Node creation ─────────────────────────────────────────────────
 
     private void AddNode_Click(object sender, RoutedEventArgs e)
     {
@@ -135,11 +225,11 @@ public partial class MainWindow : Window
         if (node == null) return;
 
         node.Position = new System.Windows.Point(
-            (_nodeCount % 4) * 230 + 30,
-            (_nodeCount / 4) * 200 + 30);
-        _nodeCount++;
+            (_activeTab.NodeCount % 4) * 230 + 30,
+            (_activeTab.NodeCount / 4) * 200 + 30);
+        _activeTab.NodeCount++;
 
-        _graph.AddNode(node);
+        _activeTab.Graph.AddNode(node);
         StatusText.Text = $"Added: {node.Name}";
     }
 
@@ -147,54 +237,47 @@ public partial class MainWindow : Window
     {
         var comment = new CommentBlockViewModel
         {
-            Position = new System.Windows.Point((_nodeCount % 4) * 230 + 30, (_nodeCount / 4) * 200 + 30)
+            Position = new System.Windows.Point(
+                (_activeTab.NodeCount % 4) * 230 + 30,
+                (_activeTab.NodeCount / 4) * 200 + 30)
         };
-        _graph.Comments.Add(comment);
-        _isDirty = true;
+        _activeTab.Graph.Comments.Add(comment);
+        _activeTab.IsDirty = true;
         StatusText.Text = "Added: Comment";
     }
 
     // ── Dirty tracking ────────────────────────────────────────────────
 
-    private void SubscribeGraphDirty()
+    private void SubscribeGraphDirty(ProjectTab tab)
     {
-        _graph.Nodes.CollectionChanged       += OnGraphChanged;
-        _graph.Connections.CollectionChanged += OnGraphChanged;
-        _graph.Nodes.CollectionChanged       += OnNodesCollectionForPropertySub;
-        foreach (var node in _graph.Nodes)
-            SubscribeNodePropertyChanged(node);
+        var g = tab.Graph;
+        g.Nodes.CollectionChanged       += (_, _) => tab.IsDirty = true;
+        g.Connections.CollectionChanged += (_, _) => tab.IsDirty = true;
+        g.Nodes.CollectionChanged       += (_, e) =>
+        {
+            if (e.NewItems == null) return;
+            foreach (GraphNodeViewModel node in e.NewItems)
+                SubscribeNodePropertyChanged(node, tab);
+        };
+        foreach (var node in g.Nodes)
+            SubscribeNodePropertyChanged(node, tab);
     }
 
-    private void OnGraphChanged(object? sender,
-        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        => _isDirty = true;
-
-    private void OnNodesCollectionForPropertySub(object? sender,
-        System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        if (e.NewItems == null) return;
-        foreach (GraphNodeViewModel node in e.NewItems)
-            SubscribeNodePropertyChanged(node);
-    }
-
-    private void SubscribeNodePropertyChanged(GraphNodeViewModel node)
-        => node.PropertyChanged += OnNodePropertyChanged;
-
-    private void OnNodePropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName is nameof(GraphNodeViewModel.IsSelected)
-                           or nameof(GraphNodeViewModel.HasError))
-            return;
-        _isDirty = true;
-    }
+    private static void SubscribeNodePropertyChanged(GraphNodeViewModel node, ProjectTab tab)
+        => node.PropertyChanged += (_, pe) =>
+        {
+            if (pe.PropertyName is nameof(GraphNodeViewModel.IsSelected)
+                                or nameof(GraphNodeViewModel.HasError)) return;
+            tab.IsDirty = true;
+        };
 
     /// <summary>
-    /// Prompts to save if there are unsaved changes.
-    /// Returns true if it is safe to proceed (saved or discarded), false if the user cancelled.
+    /// Prompts to save if the active tab has unsaved changes.
+    /// Returns true if safe to proceed (saved or discarded), false if cancelled.
     /// </summary>
     private bool PromptSaveIfDirty()
     {
-        if (!_isDirty) return true;
+        if (!_activeTab.IsDirty) return true;
 
         var dlg = new UnsavedChangesDialog(this);
         dlg.ShowDialog();
@@ -203,7 +286,7 @@ public partial class MainWindow : Window
         if (dlg.Result == UnsavedResult.Save)
         {
             SaveProject_Click(this, new RoutedEventArgs());
-            return !_isDirty; // false if Save As was cancelled
+            return !_activeTab.IsDirty; // false if Save As was cancelled
         }
 
         return true; // Discard
@@ -211,40 +294,34 @@ public partial class MainWindow : Window
 
     // ── File menu handlers ────────────────────────────────────────────
 
-    private void NewProject_Click(object sender, RoutedEventArgs e)
-    {
-        if (!PromptSaveIfDirty()) return;
-
-        _graph.Connections.Clear();
-        _graph.Nodes.Clear();
-        _graph.Comments.Clear();
-        FloatPreviewPanel.ClearPreview();
-        _currentFilePath = null;
-        _nodeCount = 0;
-        _isDirty = false;
-        UpdateTitle();
-        StatusText.Text = "New project";
-        FileNameText.Text = "New Project";
-    }
-
     private void OpenProject_Click(object sender, RoutedEventArgs e)
     {
-        if (!PromptSaveIfDirty()) return;
-
         var dlg = new OpenFileDialog { Filter = "TextureMaker Project|*.txmk" };
         if (dlg.ShowDialog() != true) return;
         try
         {
-            _graph = ProjectSerializer.Load(dlg.FileName);
-            NodeGraph.SetGraph(_graph);
-            NodeGraph.SelectionChanged += OnSelectionChanged;
-            SubscribeGraphDirty();
-            FloatPreviewPanel.ClearPreview();
-            _currentFilePath = dlg.FileName;
-            _nodeCount = _graph.Nodes.Count;
-            _isDirty = false;
-            UpdateTitle();
-            StatusText.Text = $"Loaded: {Path.GetFileName(dlg.FileName)}";
+            var graph = ProjectSerializer.Load(dlg.FileName);
+
+            ProjectTab tab;
+            // Reuse current tab if it is empty and untouched
+            if (_activeTab.FilePath == null && !_activeTab.IsDirty && _activeTab.Graph.Nodes.Count == 0)
+            {
+                int idx = Tabs.IndexOf(_activeTab);
+                Tabs.Remove(_activeTab);
+                tab = new ProjectTab(graph);
+                Tabs.Insert(idx, tab);
+            }
+            else
+            {
+                tab = new ProjectTab(graph);
+                Tabs.Add(tab);
+            }
+
+            tab.FilePath  = dlg.FileName;
+            tab.NodeCount = graph.Nodes.Count;
+            tab.IsDirty   = false;
+            SubscribeGraphDirty(tab);
+            SwitchToTab(tab);
         }
         catch (Exception ex)
         {
@@ -255,7 +332,7 @@ public partial class MainWindow : Window
 
     private void SaveProject_Click(object sender, RoutedEventArgs e)
     {
-        if (_currentFilePath == null) SaveAsProject_Click(sender, e);
+        if (_activeTab.FilePath == null) SaveAsProject_Click(sender, e);
         else DoSave();
     }
 
@@ -263,7 +340,7 @@ public partial class MainWindow : Window
     {
         var dlg = new SaveFileDialog { Filter = "TextureMaker Project|*.txmk", DefaultExt = "txmk" };
         if (dlg.ShowDialog() != true) return;
-        _currentFilePath = dlg.FileName;
+        _activeTab.FilePath = dlg.FileName;
         DoSave();
         UpdateTitle();
     }
@@ -272,9 +349,9 @@ public partial class MainWindow : Window
     {
         try
         {
-            ProjectSerializer.Save(_graph, _currentFilePath!);
-            _isDirty = false;
-            StatusText.Text = $"Saved: {Path.GetFileName(_currentFilePath!)}";
+            ProjectSerializer.Save(_activeTab.Graph, _activeTab.FilePath!);
+            _activeTab.IsDirty = false;
+            StatusText.Text = $"Saved: {Path.GetFileName(_activeTab.FilePath!)}";
         }
         catch (Exception ex)
         {
@@ -285,14 +362,14 @@ public partial class MainWindow : Window
 
     private void UpdateTitle()
     {
-        var name = _currentFilePath == null ? null : Path.GetFileName(_currentFilePath);
+        var name = _activeTab.FilePath == null ? null : Path.GetFileName(_activeTab.FilePath);
         Title = name == null ? "TextureMaker" : $"TextureMaker — {name}";
         FileNameText.Text = name ?? "New Project";
     }
 
     private async void ExportAll_Click(object sender, RoutedEventArgs e)
     {
-        var nodes = _graph.Nodes.OfType<SaveNodeViewModel>()
+        var nodes = _activeTab.Graph.Nodes.OfType<SaveNodeViewModel>()
             .Where(n => n.LastTexture != null && n.ResolveFullPath() != null)
             .ToList();
 

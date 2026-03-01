@@ -439,6 +439,17 @@ public partial class GraphCanvas : UserControl
         return new PathGeometry(new[] { figure });
     }
 
+    // ── Public: view transform get/set (for tab save/restore) ────────
+    public (double scale, double panX, double panY) GetViewTransform()
+        => (_scale.ScaleX, _pan.X, _pan.Y);
+
+    public void SetViewTransform(double scale, double panX, double panY)
+    {
+        _scale.ScaleX = _scale.ScaleY = scale;
+        _pan.X = panX;
+        _pan.Y = panY;
+    }
+
     // ── Public: refresh all connections (call after layout pass) ──────
     public void RefreshConnections()
     {
